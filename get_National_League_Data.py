@@ -16,8 +16,8 @@ summary_stat = 'alias=player'
 goal_stats = 'alias=playerGoalAssist'
 shot_stat = 'alias=playerShotDetail'
 faceoff_stat = 'alias=playerFaceoff'
-goalie_summary_stat = 'alias=goalie'
-goalie_shot_stat = 'alias=goalieShotDetail'
+goalie_summary_stat = 'alias=goalkeeper'
+goalie_shot_stat = 'alias=goalkeeperShotDetail'
 # strandard stuff for language, sorting and query definition 
 standard_sorting = '&orderBy=player&orderByDescending=false'
 standard_info = '&skip=-1&language=de'
@@ -87,6 +87,7 @@ def send_request(request_url: str) -> dict:
       return json_data
     except:
         raise Exception('Could not parse the response into JSON for the url: ' + request_url)
+
 #
 # add a worhsheet to the excel file which gets created at the beginning (worksheet = tab in Excel)
 #
@@ -96,6 +97,7 @@ def add_worksheet(my_excelfile: xlsxwriter.Workbook, sheet_name:str) -> xlsxwrit
         return worksheet
     except:
         raise Exception('Could not add the worksheet: ' + sheet_name)
+
 #
 # write the titles for the player stats to the desired worksheet 
 #
@@ -106,13 +108,18 @@ def write_titels_to_worksheet_players(my_worksheet: xlsxwriter.worksheet, start_
     my_worksheet.write(start_row, 3, 'Assists')
     my_worksheet.write(start_row, 4, 'Shots on Goal')
     my_worksheet.write(start_row, 5, 'Schüsse aufs Tor aus Slot')
-    my_worksheet.write(start_row, 6, '+/-')
-    my_worksheet.write(start_row, 7, 'Bullys Total')
-    my_worksheet.write(start_row, 8, 'Gewonnene Bullys')
-    my_worksheet.write(start_row, 9, 'Blocked Shots')
-    my_worksheet.write(start_row, 10, 'Shorthanders')
-    my_worksheet.write(start_row, 11, 'Powerplay Goals')
-    my_worksheet.write(start_row, 12, 'Penalty Minutes')
+    my_worksheet.write(start_row, 6, 'Schüsse nebes Tor')
+    my_worksheet.write(start_row, 7, 'Schüsse an die Torumrandung')
+    my_worksheet.write(start_row, 8, '+/-')
+    my_worksheet.write(start_row, 9, 'Bullys Total')
+    my_worksheet.write(start_row, 10, 'Gewonnene Bullys')
+    my_worksheet.write(start_row, 11, 'Verlorene Bullys')
+    my_worksheet.write(start_row, 12, 'Blocked Shots')
+    my_worksheet.write(start_row, 13, 'Shorthanders')
+    my_worksheet.write(start_row, 14, 'Shorthander Assists')
+    my_worksheet.write(start_row, 15, 'Powerplay Goals')
+    my_worksheet.write(start_row, 15, 'Powerplay Assists')
+    my_worksheet.write(start_row, 16, 'Penalty Minutes')
 
 #
 # create the request URLs and get the data 
@@ -137,18 +144,78 @@ def get_the_data():
   request_url = (base_url + goalie_summary_stat + standard_info +quary_basic 
                + current_season + phase_regular + all_teams + all_positions 
                + all_licences + filtering_info + standard_sorting + standard_ending)
-  #goalie_data = send_request(request_url)
+  goalie_data = send_request(request_url)
   request_url = (base_url + goalie_shot_stat + standard_info +quary_basic + current_season 
                + phase_regular + all_teams + all_positions + all_licences + filtering_info 
                + standard_sorting + standard_ending)
-  #goalie_shot_data = send_request(request_url)
-  return general_data, goal_data, shot_data, faceoff_data
+  goalie_shot_data = send_request(request_url)
+  return general_data, goal_data, shot_data, faceoff_data, goalie_data, goalie_shot_data
+
+#
+# add the general data to a dict
+#
+def add_general_data(i: list, team_name: str) -> dict:
+    # create a temporary dict to store the player data in a strructured way which is easy to extend
+    # by additional fields later on as well retreval by key is possible (aka search) which makes the 
+    # gathering and adding of data easier
+    temp_dict = { 'Name': i[1]
+                , 'Team': team_name
+                , 'Position': i[3]
+                , 'Games_played': i[4]
+                , 'Goals': i[5]
+                , 'Assists': i[6]
+                , 'PIM': i[9]
+                , '+/-': i[10]}
+    return temp_dict
+
+#
+# add goal data
+#
+def add_goal_data(i: list) -> dict:
+    temp_dict = { 'Assists': i[6]
+                , 'PP_Goals': i[12]
+                , 'PP_Assists': i[13]
+                , 'Box_Play_Goals': i[14]
+                , 'Box_Play_Assists': i[15]}
+    return temp_dict
+
+#
+# add shot data
+#
+def add_shot_data(i: list) -> dict:
+    temp_dict = { 'Shots_total': i[5]
+                , 'Shots_from_slot': i[8]
+                , 'Shots_missed': i[10]
+                , 'Shots_on_border': i[12]
+                , 'Blocked_shots': i[14]}
+    return temp_dict
+
+#
+# add the goalie data to a dict
+#
+def add_goalie_data(i: list, j: list) -> dict:
+    # create a temporary dict to store the player data in a strructured way which is easy to extend
+    # by additional fields later on as well retreval by key is possible (aka search) which makes the 
+    # gathering and adding of data easier
+    temp_dict = { 'Name': i[1]
+                , 'Team': i[2]['name']
+                , 'Position': 'Torhüter'
+                , 'Goals_agains': i[4]
+                , 'Total_shots_agains': j[4]
+                , 'Total_save%': i[9]
+                , 'Shots_from_slot': j[6]
+                , 'Slot_save%': j[12]
+                , 'Missed_shots': j[8]
+                , 'Shots_against_border': j[10]
+                , 'PIM': i[11]}
+    return temp_dict
 #
 # take the gathered data and sort them into dicts per team 
 #
 def create_team_data():
     # get the data from the API
-    general_data, goal_data, shot_data, faceoff_data = get_the_data()
+
+    general_data, goal_data, shot_data, faceoff_data, goalie_data, goalie_shot_data = get_the_data()
     # create the dicts to tell python that they actually are dicts
     ehc_biel_data = {}
     ehc_kloten_data = {}
@@ -164,6 +231,7 @@ def create_team_data():
     scl_tigers_data = {}
     rapperswil_jona_lakers_data = {}
     zsc_lions_data = {}
+
     # the gathered data is a huge JSON which contains several dicts and lists. We actually 
     # do not care about the headers and dropdown options and therefore we directly go to the key 'data' which then is 
     # a list represented by i. each of them contains the statistic data of one player and yet another dict for the team info. 
@@ -179,176 +247,46 @@ def create_team_data():
         case 102128:
             # player name is always the second item in the list and since we are here in Python and not in COBOL 
             # we start counting at 0.
-            temp_key = i[1]
-            # create a temporary dict to store the player data in a strructured way which is easy to extend
-            # by additional fields later on as well retreval by key is possible (aka search) which makes the 
-            # gathering and adding of data easier
-            temp_dict = {'Name': i[1]
-                              # access the team name from the dictionary which we extracted before
-                            , 'Team': team_raw['name']
-                            , 'Position': i[3]
-                            , 'Games Played': i[4]
-                            , 'Goals': i[5]
-                            , 'Assists': i[6]
-                            , 'PIM': i[9]
-                            , '+/-': i[10]}
-            ehc_biel_data[temp_key] = temp_dict
+            ehc_biel_data[i[1]] = add_general_data(i, team_raw['name'])
         # Kloten
         case 101149:
-            temp_key = i[1]
-            temp_dict ={'Name': i[1]
-                            , 'Team': team_raw['name'] 
-                            , 'Position': i[3]
-                            , 'Games Played': i[4]
-                            , 'Goals': i[5]
-                            , 'Assists': i[6]
-                            , 'PIM': i[9]
-                            , '+/-': i[10]}
-            ehc_kloten_data[temp_key] = temp_dict
+            ehc_kloten_data[i[1]] = add_general_data(i, team_raw['name'])
         # Zug
         case 101144:
-            temp_key = i[1]
-            temp_dict = {'Name': i[1]
-                            , 'Team': team_raw['name'] 
-                            , 'Position': i[3]
-                            , 'Games Played': i[4]
-                            , 'Goals': i[5]
-                            , 'Assists': i[6]
-                            , 'PIM': i[9]
-                            , '+/-': i[10]}
-            ev_zug_data[temp_key] = temp_dict
+            ev_zug_data[i[1]] = add_general_data(i, team_raw['name'])
         # Fribourg  
         case 103138:
-            temp_key = i[1]
-            temp_dict = {'Name': i[1]  
-                            , 'Team': team_raw['name']
-                            , 'Position': i[3]
-                            , 'Games Played': i[4]
-                            , 'Goals': i[5]
-                            , 'Assists': i[6]
-                            , 'PIM': i[9]
-                            , '+/-': i[10]}
-            fribourg_gotteron_data[temp_key] = temp_dict
+            fribourg_gotteron_data[i[1]] = add_general_data(i, team_raw['name'])
         # Genf
         case 103140:
-            temp_key = i[1]
-            temp_dict = {'Name': i[1]
-                            , 'Team': team_raw['name']
-                            , 'Position': i[3]
-                            , 'Games Played': i[4]
-                            , 'Goals': i[5]
-                            , 'Assists': i[6]
-                            , 'PIM': i[9]
-                            , '+/-': i[10]}
-            genf_servette_data[temp_key] = temp_dict
+            genf_servette_data[i[1]] = add_general_data(i, team_raw['name'])
         # Ajoie
         case 103144:
-            temp_key = i[1]
-            temp_dict = {'Name': i[1]
-                            , 'Team': team_raw['name']
-                            , 'Position': i[3]
-                            , 'Games Played': i[4]
-                            , 'Goals': i[5]
-                            , 'Assists': i[6]
-                            , 'PIM': i[9]
-                            , '+/-': i[10]}
-            hc_ajoie_data[temp_key] = temp_dict
+            hc_ajoie_data[i[1]] = add_general_data(i, team_raw['name'])
         # Ambri
         case 101152:
-            temp_key = i[1]
-            temp_dict = {'Name': i[1]
-                            , 'Team': team_raw['name']
-                            , 'Position': i[3]
-                            , 'Games Played': i[4]
-                            , 'Goals': i[5]
-                            , 'Assists': i[6]
-                            , 'PIM': i[9]
-                            , '+/-': i[10]}
-            hc_ambri_piotta_data[temp_key] = temp_dict
+            hc_ambri_piotta_data[i[1]] = add_general_data(i, team_raw['name'])
         # Davos
         case 101151:
-            temp_key = i[1]
-            temp_dict = {'Name': i[1]
-                            , 'Team': team_raw['name']
-                            , 'Position': i[3]
-                            , 'Games Played': i[4]
-                            , 'Goals': i[5]
-                            , 'Assists': i[6]
-                            , 'PIM': i[9]
-                            , '+/-': i[10]}
-            hc_davos_data[temp_key] = temp_dict
+            hc_davos_data[i[1]] = add_general_data(i, team_raw['name'])
         # Lugano
         case 101150:
-            temp_key = i[1]
-            temp_dict = {'Name': i[1]
-                            , 'Team': team_raw['name']
-                            , 'Position': i[3]
-                            , 'Games Played': i[4]
-                            , 'Goals': i[5]
-                            , 'Assists': i[6]
-                            , 'PIM': i[9]
-                            , '+/-': i[10]}
-            hc_lugano_data[temp_key] = temp_dict
+            hc_lugano_data[i[1]] = add_general_data(i, team_raw['name'])
         # Lausanne
         case 103141:
-            temp_key = i[1]
-            temp_dict ={'Name': i[1]
-                            , 'Team': team_raw['name']
-                            , 'Position': i[3]  
-                            , 'Games Played': i[4]
-                            , 'Goals': i[5]
-                            , 'Assists': i[6]
-                            , 'PIM': i[9]
-                            , '+/-': i[10]}
-            hc_lausanne_data[temp_key] = temp_dict
+            hc_lausanne_data[i[1]] = add_general_data(i, team_raw['name'])
         # Bern
         case 102126:
-            temp_key = i[1]
-            temp_dict = {'Name': i[1]
-                            , 'Team': team_raw['name']
-                            , 'Position': i[3]  
-                            , 'Games Played': i[4]
-                            , 'Goals': i[5]
-                            , 'Assists': i[6]
-                            , 'PIM': i[9]
-                            , '+/-': i[10]}
-            sc_bern_data[temp_key] = temp_dict
+            sc_bern_data[i[1]] = add_general_data(i, team_raw['name'])
         # Tigers
         case 102127:
-            temp_key = i[1]
-            temp_dict = {'Name': i[1]
-                            , 'Team': team_raw['name']  
-                            , 'Position': i[3]
-                            , 'Games Played': i[4]
-                            , 'Goals': i[5]
-                            , 'Assists': i[6]
-                            , 'PIM': i[9]
-                            , '+/-': i[10]}
-            scl_tigers_data[temp_key] = temp_dict
+            scl_tigers_data[i[1]] = add_general_data(i, team_raw['name'])
         # Rappi
         case 101060:
-            temp_key = i[1]
-            temp_dict ={'Name': i[1]
-                            , 'Team': team_raw['name']
-                            , 'Position': i[3]
-                            , 'Games Played': i[4]
-                            , 'Goals': i[5]
-                            , 'Assists': i[6]
-                            , 'PIM': i[9]   
-                            , '+/-': i[10]}
-            rapperswil_jona_lakers_data[temp_key] = temp_dict
+            rapperswil_jona_lakers_data[i[1]] = add_general_data(i, team_raw['name'])
         # ZSC
         case 101139:
-            temp_key = i[1]
-            temp_dict = { 'Name': i[1]
-                            , 'Team': team_raw['name']
-                            , 'Position': i[3]  
-                            , 'Games Played': i[4]
-                            , 'Goals': i[5]
-                            , 'Assists': i[6]
-                            , 'PIM': i[9]
-                            , '+/-': i[10]}
-            zsc_lions_data[temp_key] = temp_dict
+            zsc_lions_data[i[1]] = add_general_data(i, team_raw['name'])
     # the dicts are now created for each team and all players with the general data 
     for i in goal_data['data']:
         # since the players are already sorted into the team dicts, we once again need the team ID to then use 
@@ -361,174 +299,216 @@ def create_team_data():
                 # I have to agree, this is kinda cool and would not work in COBOL
                 # we take the team dict, access the player sub dict by the player name 
                 # (which is the Key in the main dict) with [i[1]] (because we have to access the second list item for the name)
-                # we then update the said sub dict with additional key value pairs 
-                ehc_biel_data[i[1]].update({'Assists': i[6], 'PP_Goals': i[12], 'PP_Assists': i[13]
-                                            , 'Box_Play_Goals': i[14], 'Box_Play_Assists': i[15]})
+                # we then update the said sub dict with additional key value pairs which we receive as a dict 
+                # by the function add_goal_data
+                ehc_biel_data[i[1]] |= add_goal_data(i)
             # Kloten
             case 101149:
-                ehc_kloten_data[i[1]].update({'Assists': i[6], 'PP_Goals': i[12], 'PP_Assists': i[13]
-                                            , 'Box_Play_Goals': i[14], 'Box_Play_Assists': i[15]})
+                ehc_kloten_data[i[1]] |= add_goal_data(i)
             # Zug
             case 101144:
-                ev_zug_data[i[1]].update({'Assists': i[6], 'PP_Goals': i[12], 'PP_Assists': i[13]
-                                            , 'Box_Play_Goals': i[14], 'Box_Play_Assists': i[15]})
+                ev_zug_data[i[1]] |= add_goal_data(i)
             # Fribourg
             case 103138:
-                fribourg_gotteron_data[i[1]].update({'Assists': i[6], 'PP_Goals': i[12], 'PP_Assists': i[13]
-                                            , 'Box_Play_Goals': i[14], 'Box_Play_Assists': i[15]})
+                fribourg_gotteron_data[i[1]] |= add_goal_data(i)
             # Genf
             case 103140:
-                genf_servette_data[i[1]].update({'Assists': i[6], 'PP_Goals': i[12], 'PP_Assists': i[13]
-                                            , 'Box_Play_Goals': i[14], 'Box_Play_Assists': i[15]})
+                genf_servette_data[i[1]] |= add_goal_data(i)
             # Ajoie
             case 103144:
-                hc_ajoie_data[i[1]].update({'Assists': i[6], 'PP_Goals': i[12], 'PP_Assists': i[13]
-                                            , 'Box_Play_Goals': i[14], 'Box_Play_Assists': i[15]})
+                hc_ajoie_data[i[1]] |= add_goal_data(i)
             # Ambri
             case 101152:
-                hc_ambri_piotta_data[i[1]].update({'Assists': i[6], 'PP_Goals': i[12], 'PP_Assists': i[13]
-                                            , 'Box_Play_Goals': i[14], 'Box_Play_Assists': i[15]})
+                hc_ambri_piotta_data[i[1]] |= add_goal_data(i)
             # Davos
             case 101151:
-                hc_davos_data[i[1]].update({'Assists': i[6], 'PP_Goals': i[12], 'PP_Assists': i[13]
-                                            , 'Box_Play_Goals': i[14], 'Box_Play_Assists': i[15]})
+                hc_davos_data[i[1]] |= add_goal_data(i)
             # Lugano
             case 101150:
-                hc_lugano_data[i[1]].update({'Assists': i[6], 'PP_Goals': i[12], 'PP_Assists': i[13]
-                                            , 'Box_Play_Goals': i[14], 'Box_Play_Assists': i[15]})
+                hc_lugano_data[i[1]] |= add_goal_data(i)
             # Lausanne
             case 103141:
-                hc_lausanne_data[i[1]].update({'Assists': i[6], 'PP_Goals': i[12], 'PP_Assists': i[13]
-                                            , 'Box_Play_Goals': i[14], 'Box_Play_Assists': i[15]})
+                hc_lausanne_data[i[1]] |= add_goal_data(i)
             # Bern
             case 102126:
-                sc_bern_data[i[1]].update({'Assists': i[6], 'PP_Goals': i[12], 'PP_Assists': i[13]
-                                            , 'Box_Play_Goals': i[14], 'Box_Play_Assists': i[15]})
+                sc_bern_data[i[1]] |= add_goal_data(i)
             # Tigers
             case 102127:
-                scl_tigers_data[i[1]].update({'Assists': i[6], 'PP_Goals': i[12], 'PP_Assists': i[13]
-                                            , 'Box_Play_Goals': i[14], 'Box_Play_Assists': i[15]})
+                scl_tigers_data[i[1]] |= add_goal_data(i)
             # Rappi
             case 101060:
-                rapperswil_jona_lakers_data[i[1]].update({'Assists': i[6], 'PP_Goals': i[12], 'PP_Assists': i[13]
-                                            , 'Box_Play_Goals': i[14], 'Box_Play_Assists': i[15]})
+                rapperswil_jona_lakers_data[i[1]] |= add_goal_data(i)
             # ZSC
             case 101139:
-                zsc_lions_data[i[1]].update({'Assists': i[6], 'PP_Goals': i[12], 'PP_Assists': i[13]
-                                            , 'Box_Play_Goals': i[14], 'Box_Play_Assists': i[15]})
+                zsc_lions_data[i[1]] |= add_goal_data(i)
     # now the same for the shot data 
     for i in shot_data['data']:
         team_id = i[2]['id']
         match team_id:
             # Biel
             case 102128:
-                ehc_biel_data[i[1]].update({'Shots_total': i[5], 'Shots_from_slot': i[8], 'Shots_missed': i[10]
-                                            , 'Shots_on_border': i[12], 'Blocked_shots': i[14]})
+                ehc_biel_data[i[1]] |= add_shot_data(i)
             # Kloten
             case 101149:
-                ehc_kloten_data[i[1]].update({'Shots_total': i[5], 'Shots_from_slot': i[8], 'Shots_missed': i[10]
-                                            , 'Shots_on_border': i[12], 'Blocked_shots': i[14]})
+                ehc_kloten_data[i[1]] |= add_shot_data(i)
             # Zug
             case 101144:
-                ev_zug_data[i[1]].update({'Shots_total': i[5], 'Shots_from_slot': i[8], 'Shots_missed': i[10]
-                                            , 'Shots_on_border': i[12], 'Blocked_shots': i[14]})
+                ev_zug_data[i[1]] |= add_shot_data(i)
             # Fribourg
             case 103138:
-                fribourg_gotteron_data[i[1]].update({'Shots_total': i[5], 'Shots_from_slot': i[8], 'Shots_missed': i[10]
-                                            , 'Shots_on_border': i[12], 'Blocked_shots': i[14]})
+                fribourg_gotteron_data[i[1]] |= add_shot_data(i)
             # Genf
             case 103140:
-                genf_servette_data[i[1]].update({'Shots_total': i[5], 'Shots_from_slot': i[8], 'Shots_missed': i[10]
-                                            , 'Shots_on_border': i[12], 'Blocked_shots': i[14]})
+                genf_servette_data[i[1]] |= add_shot_data(i)
             # Ajoie
             case 103144:
-                hc_ajoie_data[i[1]].update({'Shots_total': i[5], 'Shots_from_slot': i[8], 'Shots_missed': i[10]
-                                            , 'Shots_on_border': i[12], 'Blocked_shots': i[14]})
+                hc_ajoie_data[i[1]] |= add_shot_data(i)
             # Ambri
             case 101152:
-                hc_ambri_piotta_data[i[1]].update({'Shots_total': i[5], 'Shots_from_slot': i[8], 'Shots_missed': i[10]
-                                            , 'Shots_on_border': i[12], 'Blocked_shots': i[14]})
+                hc_ambri_piotta_data[i[1]] |= add_shot_data(i)
             # Davos
             case 101151:
-                hc_davos_data[i[1]].update({'Shots_total': i[5], 'Shots_from_slot': i[8], 'Shots_missed': i[10]
-                                            , 'Shots_on_border': i[12], 'Blocked_shots': i[14]})
+                hc_davos_data[i[1]] |= add_shot_data(i)
             # Lugano
             case 101150:
-                hc_lugano_data[i[1]].update({'Shots_total': i[5], 'Shots_from_slot': i[8], 'Shots_missed': i[10]
-                                            , 'Shots_on_border': i[12], 'Blocked_shots': i[14]})
+                hc_lugano_data[i[1]] |= add_shot_data(i)
             # Lausanne
             case 103141:
-                hc_lausanne_data[i[1]].update({'Shots_total': i[5], 'Shots_from_slot': i[8], 'Shots_missed': i[10]
-                                            , 'Shots_on_border': i[12], 'Blocked_shots': i[14]})
+                hc_lausanne_data[i[1]] |= add_shot_data(i)
             # Bern
             case 102126:
-                sc_bern_data[i[1]].update({'Shots_total': i[5], 'Shots_from_slot': i[8], 'Shots_missed': i[10]
-                                            , 'Shots_on_border': i[12], 'Blocked_shots': i[14]})
+                sc_bern_data[i[1]] |= add_shot_data(i)
             # Tigers
             case 102127:
-                scl_tigers_data[i[1]].update({'Shots_total': i[5], 'Shots_from_slot': i[8], 'Shots_missed': i[10]
-                                            , 'Shots_on_border': i[12], 'Blocked_shots': i[14]})
+                scl_tigers_data[i[1]] |= add_shot_data(i)
             # Rappi
             case 101060:
-                rapperswil_jona_lakers_data[i[1]].update({'Shots_total': i[5], 'Shots_from_slot': i[8], 'Shots_missed': i[10]
-                                            , 'Shots_on_border': i[12], 'Blocked_shots': i[14]})
+                rapperswil_jona_lakers_data[i[1]] |= add_shot_data(i)
             # ZSC
             case 101139:
-                zsc_lions_data[i[1]].update({'Shots_total': i[5], 'Shots_from_slot': i[8], 'Shots_missed': i[10]
-                                            , 'Shots_on_border': i[12], 'Blocked_shots': i[14]})
+                zsc_lions_data[i[1]] |= add_shot_data(i)
     # now again the same for the faceoff data
-    print(faceoff_data)
+    for i in faceoff_data['data']:
+        team_id = i[2]['id']
+        match team_id:
+            # Biel
+            case 102128:
+                # we could actually use again the functions but since the added values are 
+                # short enough to keep everything in one line, we stick to the update option 
+                # to demonstrate that we not only can merge but also add key values
+                ehc_biel_data[i[1]].update({'FO_total': i[5], 'FO_won': i[8], 'FO_lost': i[9]})
+            # Kloten 
+            case 101149: 
+                ehc_kloten_data[i[1]].update({'FO_total': i[5], 'FO_won': i[8], 'FO_lost': i[9]})
+            # Zug
+            case 101144:
+                ev_zug_data[i[1]].update({'FO_total': i[5], 'FO_won': i[8], 'FO_lost': i[9]})
+            # Fribourg 
+            case 103138: 
+                fribourg_gotteron_data[i[1]].update({'FO_total': i[5], 'FO_won': i[8], 'FO_lost': i[9]})
+            # Genf
+            case 103140: 
+                genf_servette_data[i[1]].update({'FO_total': i[5], 'FO_won': i[8], 'FO_lost': i[9]})
+            # Ajoie
+            case 103144:
+                hc_ajoie_data[i[1]].update({'FO_total': i[5], 'FO_won': i[8], 'FO_lost': i[9]})
+            # Ambri 
+            case 101152:
+                hc_ambri_piotta_data[i[1]].update({'FO_total': i[5], 'FO_won': i[8], 'FO_lost': i[9]})
+            # Davos
+            case 101151:
+                hc_davos_data[i[1]].update({'FO_total': i[5], 'FO_won': i[8], 'FO_lost': i[9]})
+            # Lugano
+            case 101150:
+                hc_lugano_data[i[1]].update({'FO_total': i[5], 'FO_won': i[8], 'FO_lost': i[9]})
+            # Lausanne
+            case 103141: 
+                hc_lausanne_data[i[1]].update({'FO_total': i[5], 'FO_won': i[8], 'FO_lost': i[9]})
+            # Bern
+            case 102126:
+                sc_bern_data[i[1]].update({'FO_total': i[5], 'FO_won': i[8], 'FO_lost': i[9]})
+            # Tigers
+            case 102127:
+                scl_tigers_data[i[1]].update({'FO_total': i[5], 'FO_won': i[8], 'FO_lost': i[9]})
+            # Rappi 
+            case 101060:
+                rapperswil_jona_lakers_data[i[1]].update({'FO_total': i[5], 'FO_won': i[8], 'FO_lost': i[9]})
+            # ZSC
+            case 101139:
+                zsc_lions_data[i[1]].update({'FO_total': i[5], 'FO_won': i[8], 'FO_lost': i[9]})
+
+    # and now the goalie data
+    # different as above we go through both lists (summary and shots agains data) at the same time in one 
+    # loop. To achieve this we cannot use a simple AND operation, but have to use the zip function, which
+    # combines the two lists (it is an intelligent merge) but only works if both lists have the same sorting (or 
+    # else we'll have garbage data). Apparently the output is not a list but a tuple and we access the data already
+    # in the loop definition 
+    # this method is chosen, as we have few goal keepers and some data of both lists we actually need (and also to 
+    # show once more the different options we have)
+    for i, j in zip(goalie_data['data'], goalie_shot_data['data']):
+        team_id = i[2]['id']
+        match team_id:
+            # Biel
+            case 102128:
+                ehc_biel_data[i[1]] = add_goalie_data(i, j)
+            # Kloten
+            case 101149:
+                ehc_kloten_data[i[1]] = add_goalie_data(i, j)
+            # Zug
+            case 101144:
+                ev_zug_data[i[1]] = add_goalie_data(i, j)
+            # Fribourg
+            case 103138:
+                fribourg_gotteron_data[i[1]] = add_goalie_data(i, j)
+            # Genf
+            case 103140:
+                genf_servette_data[i[1]] = add_goalie_data(i, j)
+            # Ajoie
+            case 103144:
+                hc_ajoie_data[i[1]] = add_goalie_data(i, j)
+            # Ambri
+            case 101152:
+                hc_ambri_piotta_data[i[1]] = add_goalie_data(i, j)
+            # Davos
+            case 101151:
+                hc_davos_data[i[1]] = add_goalie_data(i, j)
+            # Lugano
+            case 101150:
+                hc_lugano_data[i[1]] = add_goalie_data(i, j)
+            # Lausanne
+            case 103141:
+                hc_lausanne_data[i[1]] = add_goalie_data(i, j)
+            # Bern
+            case 102126:
+                sc_bern_data[i[1]] = add_goalie_data(i, j)
+            # Tigers
+            case 102127:
+                scl_tigers_data[i[1]] = add_goalie_data(i, j)
+            # Rappi
+            case 101060:
+                rapperswil_jona_lakers_data[i[1]] = add_goalie_data(i, j)
+            # ZSC
+            case 101139:
+                zsc_lions_data[i[1]] = add_goalie_data(i, j)
 
     # return the team dicts 
     return (ehc_biel_data, ehc_kloten_data, ev_zug_data, fribourg_gotteron_data, genf_servette_data,
             hc_ajoie_data, hc_ambri_piotta_data, hc_davos_data, hc_lugano_data, hc_lausanne_data,
             sc_bern_data, scl_tigers_data, rapperswil_jona_lakers_data, zsc_lions_data)
 #
+# the actual main function
 #
-#
-def main():
+def main() -> None:
     (ehc_biel_data, ehc_kloten_data, ev_zug_data, fribourg_gotteron_data, genf_servette_data,
      hc_ajoie_data, hc_ambri_piotta_data, hc_davos_data, hc_lugano_data, hc_lausanne_data,
      sc_bern_data, scl_tigers_data, rapperswil_jona_lakers_data, zsc_lions_data) = create_team_data()
     # Further processing and writing to Excel can be done here
-
+    print(zsc_lions_data)
     my_excelfile.close()
 #
 # ZSC Lions Stürmer
 #
-main()
+
 zsc_stuermer = add_worksheet(my_excelfile, 'ZSC Stürmer')
 start_row = 0
 write_titels_to_worksheet_players(zsc_stuermer, start_row)
-
-        #zsc_stuermer.write(start_row, 0, i['playerName'])
-        #zsc_stuermer.write(start_row, 1, i['gamesPlayed'])
-# zsc_stuermer_data = {general_data['4940'] | 
-#                      goal_data['data']['playerGoalAssistStats']['4940']['101139']['3'] | 
-#                      shot_data['data']['playerShotDetailStats']['4940']['101139']['3'] | 
-#                      faceoff_data['data']['playerFaceoffStats']['4940']['101139']['3']}
-# for player_id, player_stats in zsc_stuermer_data.items():
-#     start_row += 1
-#     zsc_stuermer.write(start_row, 0, player_stats['playerName'])
-#     zsc_stuermer.write(start_row, 1, player_stats['gamesPlayed'])
-#     zsc_stuermer.write(start_row, 2, player_stats['goals'])
-#     zsc_stuermer.write(start_row, 3, player_stats['assists'])
-#     zsc_stuermer.write(start_row, 4, player_stats['shotsOnGoal'])
-#     zsc_stuermer.write(start_row, 5, player_stats['shotsOnGoalFromSlot'])
-#     zsc_stuermer.write(start_row, 6, player_stats['plusMinus'])
-#     zsc_stuermer.write(start_row, 7, player_stats['faceoffsTotal'])
-#     zsc_stuermer.write(start_row, 8, player_stats['faceoffsWon'])
-#     zsc_stuermer.write(start_row, 9, player_stats['blockedShots'])
-#     zsc_stuermer.write(start_row, 10, player_stats['shorthandedGoals'])
-#     zsc_stuermer.write(start_row, 11, player_stats['powerplayGoals'])
-#     zsc_stuermer.write(start_row, 12, player_stats['penaltyMinutes'])
-
-
-def main():
-    (ehc_biel_data, ehc_kloten_data, ev_zug_data, fribourg_gotteron_data, genf_servette_data,
-     hc_ajoie_data, hc_ambri_piotta_data, hc_davos_data, hc_lugano_data, hc_lausanne_data,
-     sc_bern_data, scl_tigers_data, rapperswil_jona_lakers_data, zsc_lions_data) = create_team_data()
-    print(zsc_lions_data)
-    # Further processing and writing to Excel can be done here
-
-    my_excelfile.close()
