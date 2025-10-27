@@ -8,66 +8,108 @@ import xlsxwriter
 import datetime 
 
 ##########################################################################
+# the objects
+##########################################################################
+class team:
+    def __init__(self, team_id, name, player_data):
+        self.team_id = team_id 
+        self.name = name
+        self.player_data = player_data
+        self.past_5_games = []
+
+
+##########################################################################
 # the variables 
 ##########################################################################
-base_url = 'https://data.sihf.ch/Statistic/api/cms/cache300?'
+BASE_URL = 'https://data.sihf.ch/Statistic/api/cms/cache'
+# results
+RESULT_CACHE = '600?'
+RESULT_PAGE = 'alias=results'
+NEXT_GAME = '&size=nextday'
+GAME_QUERY = '&searchQuery=1,2,4,10//1/////nextDayDelayed'
+ALL_GAMES_QUERY = '&searchQuery=1,10//1'
+GAME_FILTER = '&filterQuery=/1&filterBy=league,deferredState'
+GAME_ORDER = '&orderBy=league,deferredState&orderByDescending=false'
+FILTER_QUERY_PAST_GAMES = '&filterQuery='
+SEASON_START_TIL_TODAY = ('/09.09.2025-' + datetime.datetime.now().strftime("%d.%m.%Y") + '//all/al')
+FILTER_BY_PAST_GAMES = '&filterBy=season,phase,date,deferredState,team1,team2'
+ORDER_BY_PAST_GAMES = '&orderBy=date&orderByDescending=true'
 #kind of stat 
-summary_stat = 'alias=player'
-goal_stats = 'alias=playerGoalAssist'
-shot_stat = 'alias=playerShotDetail'
-faceoff_stat = 'alias=playerFaceoff'
-goalie_summary_stat = 'alias=goalkeeper'
-goalie_shot_stat = 'alias=goalkeeperShotDetail'
+STAT_CACHE = '300?'
+SUMMARY_STAT = 'alias=player'
+GOAL_STATS = 'alias=playerGoalAssist'
+SHOT_STAT = 'alias=playerShotDetail'
+FACEOFF_STAT = 'alias=playerFaceoff'
+GOALIE_SUMMARY_STAT = 'alias=goalkeeper'
+GOALIE_SHOT_STAT = 'alias=goalkeeperShotDetail'
 # strandard stuff for language, sorting and query definition 
-standard_sorting = '&orderBy=player&orderByDescending=false'
-standard_info = '&skip=-1&language=de'
-quary_basic = '&searchQuery=1//1&filterQuery=' 
+STANDARD_SORTING = '&orderBy=player&orderByDescending=false'
+STANDARD_INFO = '&skip=-1&language=de'
+QUARY_BASIC = '&searchQuery=1//1&filterQuery=' 
 ##########################################################################
 # FILTERS                                                                #
 ##########################################################################
 # season 
-current_season = '2026'
+CURRENT_SEASON = '2026'
 # phase
-phase_regular = '/4940'
+PHASE_REGULAR = '/4940'
 # Teams 
-all_teams = '/all'
-biel = '/102128'
-ehc_kloten = '/101149'
-ev_zug = '/101144'
-fribourg_gotteron = '103138'
-genf_servette = '/103140'
-ajoie = '/103144'
-ambri_piotta = '/101152'
-davos = '/101151'
-lugano = '/101150'
-lausanne = '103141'
-sc_bern = '/102126'
-scl_tigers = '/102127'
-rappi_lakers = '/101060'
-zsc_lions = '/101139'
+ALL_TEAMS = '/all'
+BIEL = '/102128'
+EHC_KLOTEN = '/101149'
+EV_ZUG = '/101144'
+FRIBOURG_GOTTERON = '103138'
+GENF_SERVETTE = '/103140'
+AJOIE = '/103144'
+AMBRI_PIOTTA = '/101152'
+DAVOS = '/101151'
+LUGANO = '/101150'
+LAUSANNE = '103141'
+SC_BERN = '/102126'
+SCL_TIGERS = '/102127'
+RAPPI_LAKERS = '/101060'
+ZSC_LIONS = '/101139'
 # positions
-all_positions = '/all'
-verteidiger = '/2'
-stuermer = '/3'
+ALL_POSITIONS = '/all'
+VERTEIDIGER = '/2'
+STUERMER = '/3'
 # licence 
-all_licences = '/all'
-swiss_licence = '/1'
-foreign_licence = '/2'
+ALL_LICENCES = '/all'
+SWISS_LICENCE = '/1'
+FOREIGN_LICENCE = '/2'
 # more standard stuff
-filtering_info = '&filterBy=Season,Phase,Team,Position,Licence'
-standard_ending = "&take=1000&callback=externalStatisticsCallback"
+FILTERING_INFO = '&filterBy=Season,Phase,Team,Position,Licence'
+STANDARD_ENDING = "&take=1000&callback=externalStatisticsCallback"
 ##########################################################################
 # excel stuff
 ##########################################################################
-current_date = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-my_storagepath = "C:/Users/Jessi/Documents/Hockey_stats/Stats_from_T"
-file_ending = ".xlsx"
-my_excelpath = my_storagepath + current_date + file_ending 
-# create the excel file
-my_excelfile = xlsxwriter.Workbook(my_excelpath)
+CURRENT_DATE = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M")
+MY_STORAGEPATH = "C:/Users/Jessi/Documents/Hockey_stats/Stats_from_"
+FILE_ENDING = ".xlsx"
+MY_EXCELPATH = MY_STORAGEPATH + CURRENT_DATE + FILE_ENDING 
+TITLE_HOME_FORMAT = {'bold': True
+                     ,'align': 'center'
+                     ,'font_color': 'White'
+                     ,'font_size': 14
+                     ,'bg_color': '#BE5014'}
+TITLE_AWAY_FORMAT = {'bold': True
+                     ,'align': 'center'
+                     ,'font_color': 'White'
+                     ,'font_size': 14
+                     ,'bg_color': '#0B3040'}
+
 ##########################################################################
 # tha functions
 ##########################################################################
+#
+# create the excel file
+#
+def create_excel_file():
+    my_excelfile = xlsxwriter.Workbook(MY_EXCELPATH)
+    standard_format = my_excelfile.add_format()
+    standard_format.set_font_name('Aptos Narrow')
+    standard_format.set_font_size(11)
+    return my_excelfile
 #
 # send the request and return the data as dictionary (this is the heart of the whole exercise)
 #
@@ -101,53 +143,71 @@ def add_worksheet(my_excelfile: xlsxwriter.Workbook, sheet_name:str) -> xlsxwrit
 #
 # write the titles for the player stats to the desired worksheet 
 #
-def write_titels_to_worksheet_players(my_worksheet: xlsxwriter.worksheet, start_row: int) -> None:
-    my_worksheet.write(start_row, 0, 'Player')
-    my_worksheet.write(start_row, 1, 'GP')
-    my_worksheet.write(start_row, 2, 'Goals')
-    my_worksheet.write(start_row, 3, 'Assists')
-    my_worksheet.write(start_row, 4, 'Shots on Goal')
-    my_worksheet.write(start_row, 5, 'Schüsse aufs Tor aus Slot')
-    my_worksheet.write(start_row, 6, 'Schüsse nebes Tor')
-    my_worksheet.write(start_row, 7, 'Schüsse an die Torumrandung')
-    my_worksheet.write(start_row, 8, '+/-')
-    my_worksheet.write(start_row, 9, 'Bullys Total')
-    my_worksheet.write(start_row, 10, 'Gewonnene Bullys')
-    my_worksheet.write(start_row, 11, 'Verlorene Bullys')
-    my_worksheet.write(start_row, 12, 'Blocked Shots')
-    my_worksheet.write(start_row, 13, 'Shorthanders')
-    my_worksheet.write(start_row, 14, 'Shorthander Assists')
-    my_worksheet.write(start_row, 15, 'Powerplay Goals')
-    my_worksheet.write(start_row, 15, 'Powerplay Assists')
-    my_worksheet.write(start_row, 16, 'Penalty Minutes')
+def write_titels_to_worksheet_players(my_worksheet: xlsxwriter.worksheet, start_row: int, start_column: int) -> int:
+    my_worksheet.write(start_row, start_column, 'Player')
+    start_column =+1
+    my_worksheet.write(start_row, start_column, 'GP')
+    start_column =+1
+    my_worksheet.write(start_row, start_column, 'Goals')
+    start_column =+1
+    my_worksheet.write(start_row, start_column, 'Assists')
+    start_column =+1
+    my_worksheet.write(start_row, start_column, 'Shots on Goal')
+    start_column =+1
+    my_worksheet.write(start_row, start_column, 'Schüsse aufs Tor aus Slot')
+    start_column =+1
+    my_worksheet.write(start_row, start_column, 'Schüsse nebes Tor')
+    start_column =+1
+    my_worksheet.write(start_row, start_column, 'Schüsse an die Torumrandung')
+    start_column =+1
+    my_worksheet.write(start_row, start_column, '+/-')
+    start_column =+1
+    my_worksheet.write(start_row, start_column, 'Bullys Total')
+    start_column =+1
+    my_worksheet.write(start_row, start_column, 'Gewonnene Bullys')
+    start_column =+1
+    my_worksheet.write(start_row, start_column, 'Verlorene Bullys')
+    start_column =+1
+    my_worksheet.write(start_row, start_column, 'Blocked Shots')
+    start_column =+1
+    my_worksheet.write(start_row, start_column, 'Shorthanders')
+    start_column =+1
+    my_worksheet.write(start_row, start_column, 'Shorthander Assists')
+    start_column =+1
+    my_worksheet.write(start_row, start_column, 'Powerplay Goals')
+    start_column =+1
+    my_worksheet.write(start_row, start_column, 'Powerplay Assists')
+    start_column =+1
+    my_worksheet.write(start_row, start_column, 'Penalty Minutes')
+    return start_column
 
 #
 # create the request URLs and get the data 
 #
 def get_the_data():
-  request_url = (base_url + summary_stat + standard_info + quary_basic 
-               + current_season + phase_regular + all_teams + all_positions 
-               + all_licences + filtering_info + standard_sorting + standard_ending)
+  request_url = (BASE_URL + STAT_CACHE + SUMMARY_STAT + STANDARD_INFO + QUARY_BASIC 
+               + CURRENT_SEASON + PHASE_REGULAR + ALL_TEAMS + ALL_POSITIONS 
+               + ALL_LICENCES + FILTERING_INFO + STANDARD_SORTING + STANDARD_ENDING)
   general_data = send_request(request_url)
-  request_url = (base_url + goal_stats + standard_info +quary_basic 
-               + current_season + phase_regular + all_teams 
-               + all_positions + all_licences + filtering_info + standard_sorting + standard_ending)
+  request_url = (BASE_URL + STAT_CACHE + GOAL_STATS + STANDARD_INFO +QUARY_BASIC 
+               + CURRENT_SEASON + PHASE_REGULAR + ALL_TEAMS 
+               + ALL_POSITIONS + ALL_LICENCES + FILTERING_INFO + STANDARD_SORTING + STANDARD_ENDING)
   goal_data = send_request(request_url)
-  request_url = (base_url + shot_stat + standard_info +quary_basic 
-               + current_season + phase_regular + all_teams + all_positions 
-               + all_licences + filtering_info + standard_sorting + standard_ending)
+  request_url = (BASE_URL + STAT_CACHE + SHOT_STAT + STANDARD_INFO +QUARY_BASIC 
+               + CURRENT_SEASON + PHASE_REGULAR + ALL_TEAMS + ALL_POSITIONS 
+               + ALL_LICENCES + FILTERING_INFO + STANDARD_SORTING + STANDARD_ENDING)
   shot_data = send_request(request_url)
-  request_url = (base_url + faceoff_stat + standard_info +quary_basic 
-               + current_season + phase_regular + all_teams + all_positions 
-               + all_licences + filtering_info + standard_sorting + standard_ending)
+  request_url = (BASE_URL + STAT_CACHE + FACEOFF_STAT + STANDARD_INFO +QUARY_BASIC 
+               + CURRENT_SEASON + PHASE_REGULAR + ALL_TEAMS + ALL_POSITIONS 
+               + ALL_LICENCES + FILTERING_INFO + STANDARD_SORTING + STANDARD_ENDING)
   faceoff_data = send_request(request_url)
-  request_url = (base_url + goalie_summary_stat + standard_info +quary_basic 
-               + current_season + phase_regular + all_teams + all_positions 
-               + all_licences + filtering_info + standard_sorting + standard_ending)
+  request_url = (BASE_URL + STAT_CACHE + GOALIE_SUMMARY_STAT + STANDARD_INFO +QUARY_BASIC 
+               + CURRENT_SEASON + PHASE_REGULAR + ALL_TEAMS + ALL_POSITIONS 
+               + ALL_LICENCES + FILTERING_INFO + STANDARD_SORTING + STANDARD_ENDING)
   goalie_data = send_request(request_url)
-  request_url = (base_url + goalie_shot_stat + standard_info +quary_basic + current_season 
-               + phase_regular + all_teams + all_positions + all_licences + filtering_info 
-               + standard_sorting + standard_ending)
+  request_url = (BASE_URL + STAT_CACHE + GOALIE_SHOT_STAT + STANDARD_INFO +QUARY_BASIC + CURRENT_SEASON 
+               + PHASE_REGULAR + ALL_TEAMS + ALL_POSITIONS + ALL_LICENCES + FILTERING_INFO 
+               + STANDARD_SORTING + STANDARD_ENDING)
   goalie_shot_data = send_request(request_url)
   return general_data, goal_data, shot_data, faceoff_data, goalie_data, goalie_shot_data
 
@@ -496,19 +556,127 @@ def create_team_data():
             hc_ajoie_data, hc_ambri_piotta_data, hc_davos_data, hc_lugano_data, hc_lausanne_data,
             sc_bern_data, scl_tigers_data, rapperswil_jona_lakers_data, zsc_lions_data)
 #
+# get the upcoming games and all past games of the season
+#
+def get_game_info ():
+    request_url = (BASE_URL + RESULT_CACHE + RESULT_PAGE + NEXT_GAME + GAME_QUERY
+                   + GAME_FILTER + GAME_ORDER + STANDARD_ENDING + STANDARD_INFO)
+    next_games = send_request(request_url)
+    request_url = (BASE_URL + STAT_CACHE + RESULT_PAGE + ALL_GAMES_QUERY + FILTER_QUERY_PAST_GAMES 
+                   + CURRENT_SEASON + ALL_TEAMS + SEASON_START_TIL_TODAY + FILTER_BY_PAST_GAMES
+                   + ORDER_BY_PAST_GAMES + STANDARD_ENDING + STANDARD_INFO)
+    past_games = send_request(request_url)
+    return (next_games, past_games)
+
+def create_game(i: list, home: bool) -> dict:
+    
+    if home is True: 
+        h = 'H'
+     
+        game = { 'Date': i[1]
+               , 'Oponent': i[4]['name']
+               , 'Home_away': h
+               , 'Goald_scored': i[5]['homeTeam']
+               , 'Goals_received': i[5]['awayTeam']}
+    else:
+        h = 'A'
+        
+        game = {  'Date': i[1]
+                , 'Oponent': i[3]['name']
+                , 'Home_away': h
+                , 'Goald_scored': i[5]['awayTeam']
+                , 'Goals_received': i[5]['homeTeam']}
+    
+    return game
+def create_player_sheet(my_workbook: xlsxwriter.Workbook, my_worksheet: xlsxwriter.worksheet,home_team: team, away_team: team):
+    start_row = 1
+    start_column = 0
+
+    my_column_pos = write_titels_to_worksheet_players(my_worksheet,start_row,start_column)
+
+    home_format = my_workbook.add_format(TITLE_HOME_FORMAT)
+    #my_worksheet.write(0,0,'Stürmer',home_format)
+    my_worksheet.merge_range(0,start_column,0,my_column_pos,'Stürmer',home_format)
+
+#
 # the actual main function
 #
 def main() -> None:
+    my_excelfile = create_excel_file()
     (ehc_biel_data, ehc_kloten_data, ev_zug_data, fribourg_gotteron_data, genf_servette_data,
      hc_ajoie_data, hc_ambri_piotta_data, hc_davos_data, hc_lugano_data, hc_lausanne_data,
      sc_bern_data, scl_tigers_data, rapperswil_jona_lakers_data, zsc_lions_data) = create_team_data()
-    # Further processing and writing to Excel can be done here
-    print(zsc_lions_data)
-    my_excelfile.close()
-#
-# ZSC Lions Stürmer
-#
+    # here we create the objects of the class team with handing over the Team ID (currently hard coded but we theoretically 
+    # can also use the request response), the proper Team name and the player data
+    # the team name is a bit silly on how we get that. we access the dictionary of the player data with translating
+    # the dictionary to a list, which leaves us with a bunch of player names in a list (the sub dictionaries 
+    # are not taken with in this transformation) and we take the very first entry to give the dictionary the key
+    # or said differently - the dictionary tells itself what the key is
+    # and yes we could allocate the objects dynamically but i am too lazy for this atm
+    # @Selena ds isch wa i mein
+    biel = team(102128,ehc_biel_data[list(ehc_biel_data)[0]]['Team'],ehc_biel_data)
+    kloten = team(101149,ehc_kloten_data[list(ehc_kloten_data)[0]]['Team'],ehc_kloten_data)
+    zug = team(101144,ev_zug_data[list(ev_zug_data)[0]]['Team'],ev_zug_data)
+    fribourg = team(103138,fribourg_gotteron_data[list(fribourg_gotteron_data)[0]]['Team'],fribourg_gotteron_data)
+    genf = team(103140,genf_servette_data[list(genf_servette_data)[0]]['Team'],genf_servette_data)
+    ajoie = team(103144,hc_ajoie_data[list(hc_ajoie_data)[0]]['Team'],hc_ajoie_data)
+    ambri = team(101152,hc_ambri_piotta_data[list(hc_ambri_piotta_data)[0]]['Team'],hc_ambri_piotta_data)
+    davos = team(101151,hc_davos_data[list(hc_davos_data)[0]]['Team'],hc_davos_data)
+    lugano = team(101150,hc_lugano_data[list(hc_lugano_data)[0]]['Team'],hc_lugano_data)
+    lausanne = team(103141,hc_lausanne_data[list(hc_lausanne_data)[0]]['Team'],hc_lausanne_data)
+    bern = team(102126,sc_bern_data[list(sc_bern_data)[0]]['Team'],sc_bern_data)
+    langnau = team(102127,scl_tigers_data[list(scl_tigers_data)[0]]['Team'],scl_tigers_data)
+    rapperswil = team(101060,rapperswil_jona_lakers_data[list(rapperswil_jona_lakers_data)[0]]['Team'],rapperswil_jona_lakers_data)
+    zsc = team(101139,zsc_lions_data[list(zsc_lions_data)[0]]['Team'],zsc_lions_data)
 
-zsc_stuermer = add_worksheet(my_excelfile, 'ZSC Stürmer')
-start_row = 0
-write_titels_to_worksheet_players(zsc_stuermer, start_row)
+    (next_games, past_games) = get_game_info()
+    lists_to_fill = True
+    # we create the dictionary with all teams where the id is the teamID 
+    # in order to iterate over the teams / not to have to create the massive 
+    # switches we have for the player data and address the objects directly without 
+    # knowing directly from the code which object we are addressing at the moment 
+    # we could have done that for the teams as well but then i would need to pass
+    # the dictionary and to refactor everything for which i am too lazy atm
+    team_dict = {biel.team_id: biel
+                ,kloten.team_id: kloten
+                ,zug.team_id: zug 
+                ,fribourg.team_id: fribourg
+                ,genf.team_id: genf
+                ,ajoie.team_id: ajoie
+                ,ambri.team_id: ambri
+                ,davos.team_id: davos
+                ,lugano.team_id: lugano
+                ,lausanne.team_id: lausanne
+                ,bern.team_id: bern
+                ,langnau.team_id:langnau
+                ,rapperswil.team_id: rapperswil
+                ,zsc.team_id: zsc}
+    
+    # if all are full, no need to go further through the list of the past games
+    while lists_to_fill:
+        for i in (past_games['data']):
+            # only if we still have space we actually add stuff to the list of past games
+            if len(team_dict[i[3]['id']].past_5_games) < 5:
+                # do the entry for the home team
+                team_dict[i[3]['id']].past_5_games.append(create_game(i,True))
+            if len(team_dict[i[4]['id']].past_5_games) < 5:
+                # do the entry for the away team
+                team_dict[i[4]['id']].past_5_games.append(create_game(i,False))
+            # Geez this IF was killing me on figuring out how to do that
+            # the all comand is basically a for iteration as we use it to iterate over the lsit items (for i in data['data'])
+            # we then create for each entry in the dictionary teams the variable j of the type team for which we check the 
+            # length of the list past_5_games where each entry in the list is actually a dictionary with the game data added above
+            if all(len(j.past_5_games) >= 5 for j in team_dict.values()):
+                # set the condition th break the while loop
+                lists_to_fill = False
+                # we need the break statement in order to escape the 'for loop' to come to the 'while loop'
+                break
+            
+    for i in (next_games['data']):
+        tab_name = ''
+        tab_name = (team_dict[i[4]['id']].name) + "_" + (team_dict[i[5]['id']].name) + "_PD"
+        my_worksheet = add_worksheet(my_excelfile, tab_name)
+        create_player_sheet(my_excelfile,my_worksheet,team_dict[i[4]['id']],team_dict[i[5]['id']])
+        break
+    my_excelfile.close()
+main()
