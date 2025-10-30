@@ -145,39 +145,39 @@ def add_worksheet(my_excelfile: xlsxwriter.Workbook, sheet_name:str) -> xlsxwrit
 #
 def write_titels_to_worksheet_players(my_worksheet: xlsxwriter.worksheet, start_row: int, start_column: int) -> int:
     my_worksheet.write(start_row, start_column, 'Player')
-    start_column =+1
+    start_column +=1
     my_worksheet.write(start_row, start_column, 'GP')
-    start_column =+1
+    start_column +=1
     my_worksheet.write(start_row, start_column, 'Goals')
-    start_column =+1
+    start_column +=1
     my_worksheet.write(start_row, start_column, 'Assists')
-    start_column =+1
+    start_column +=1
     my_worksheet.write(start_row, start_column, 'Shots on Goal')
-    start_column =+1
+    start_column +=1
     my_worksheet.write(start_row, start_column, 'Schüsse aufs Tor aus Slot')
-    start_column =+1
+    start_column +=1
     my_worksheet.write(start_row, start_column, 'Schüsse nebes Tor')
-    start_column =+1
+    start_column +=1
     my_worksheet.write(start_row, start_column, 'Schüsse an die Torumrandung')
-    start_column =+1
+    start_column +=1
     my_worksheet.write(start_row, start_column, '+/-')
-    start_column =+1
+    start_column +=1
     my_worksheet.write(start_row, start_column, 'Bullys Total')
-    start_column =+1
+    start_column +=1
     my_worksheet.write(start_row, start_column, 'Gewonnene Bullys')
-    start_column =+1
+    start_column +=1
     my_worksheet.write(start_row, start_column, 'Verlorene Bullys')
-    start_column =+1
+    start_column +=1
     my_worksheet.write(start_row, start_column, 'Blocked Shots')
-    start_column =+1
+    start_column +=1
     my_worksheet.write(start_row, start_column, 'Shorthanders')
-    start_column =+1
+    start_column +=1
     my_worksheet.write(start_row, start_column, 'Shorthander Assists')
-    start_column =+1
+    start_column +=1
     my_worksheet.write(start_row, start_column, 'Powerplay Goals')
-    start_column =+1
+    start_column +=1
     my_worksheet.write(start_row, start_column, 'Powerplay Assists')
-    start_column =+1
+    start_column +=1
     my_worksheet.write(start_row, start_column, 'Penalty Minutes')
     return start_column
 
@@ -361,92 +361,120 @@ def create_team_data():
                 # (which is the Key in the main dict) with [i[1]] (because we have to access the second list item for the name)
                 # we then update the said sub dict with additional key value pairs which we receive as a dict 
                 # by the function add_goal_data
-                ehc_biel_data[i[1]] |= add_goal_data(i)
+                if i[1] in ehc_biel_data.keys():
+                  ehc_biel_data[i[1]] |= add_goal_data(i)
             # Kloten
             case 101149:
-                ehc_kloten_data[i[1]] |= add_goal_data(i)
+                if i[1] in ehc_kloten_data.keys():
+                  ehc_kloten_data[i[1]] |= add_goal_data(i)
             # Zug
             case 101144:
-                ev_zug_data[i[1]] |= add_goal_data(i)
+                if i[1] in ev_zug_data.keys():
+                  ev_zug_data[i[1]] |= add_goal_data(i)
             # Fribourg
             case 103138:
-                fribourg_gotteron_data[i[1]] |= add_goal_data(i)
+                if i[1] in fribourg_gotteron_data.keys():
+                  fribourg_gotteron_data[i[1]] |= add_goal_data(i)
             # Genf
             case 103140:
-                genf_servette_data[i[1]] |= add_goal_data(i)
+                if i[1] in genf_servette_data.keys(): 
+                  genf_servette_data[i[1]] |= add_goal_data(i)
             # Ajoie
             case 103144:
-                hc_ajoie_data[i[1]] |= add_goal_data(i)
+                if i[1] in hc_ajoie_data.keys():
+                  hc_ajoie_data[i[1]] |= add_goal_data(i)
             # Ambri
             case 101152:
-                hc_ambri_piotta_data[i[1]] |= add_goal_data(i)
+                if i[1] in hc_ambri_piotta_data.keys():
+                  hc_ambri_piotta_data[i[1]] |= add_goal_data(i)
             # Davos
             case 101151:
-                hc_davos_data[i[1]] |= add_goal_data(i)
+                if i[1] in hc_davos_data.keys():
+                  hc_davos_data[i[1]] |= add_goal_data(i)
             # Lugano
             case 101150:
-                hc_lugano_data[i[1]] |= add_goal_data(i)
+                if i[1] in hc_lugano_data.keys():
+                  hc_lugano_data[i[1]] |= add_goal_data(i)
             # Lausanne
             case 103141:
-                hc_lausanne_data[i[1]] |= add_goal_data(i)
+                if i[1] in hc_lausanne_data.keys():
+                  hc_lausanne_data[i[1]] |= add_goal_data(i)
             # Bern
             case 102126:
-                sc_bern_data[i[1]] |= add_goal_data(i)
+                if i[1] in sc_bern_data.keys():
+                  sc_bern_data[i[1]] |= add_goal_data(i)
             # Tigers
             case 102127:
-                scl_tigers_data[i[1]] |= add_goal_data(i)
+                if i[1] in scl_tigers_data.keys():
+                  scl_tigers_data[i[1]] |= add_goal_data(i)
             # Rappi
             case 101060:
-                rapperswil_jona_lakers_data[i[1]] |= add_goal_data(i)
+                if i[1] in rapperswil_jona_lakers_data.keys():
+                  rapperswil_jona_lakers_data[i[1]] |= add_goal_data(i)
             # ZSC
             case 101139:
-                zsc_lions_data[i[1]] |= add_goal_data(i)
+                if i[1] in zsc_lions_data.keys():
+                  zsc_lions_data[i[1]] |= add_goal_data(i)
     # now the same for the shot data 
     for i in shot_data['data']:
         team_id = i[2]['id']
         match team_id:
             # Biel
             case 102128:
-                ehc_biel_data[i[1]] |= add_shot_data(i)
+                if i[1] in ehc_biel_data.keys():
+                  ehc_biel_data[i[1]] |= add_shot_data(i)
             # Kloten
             case 101149:
-                ehc_kloten_data[i[1]] |= add_shot_data(i)
+                if i[1] in ehc_kloten_data.keys():
+                  ehc_kloten_data[i[1]] |= add_shot_data(i)
             # Zug
             case 101144:
-                ev_zug_data[i[1]] |= add_shot_data(i)
+                if i[1] in ev_zug_data.keys():
+                  ev_zug_data[i[1]] |= add_shot_data(i)
             # Fribourg
             case 103138:
-                fribourg_gotteron_data[i[1]] |= add_shot_data(i)
+                if i[1] in fribourg_gotteron_data.keys():
+                  fribourg_gotteron_data[i[1]] |= add_shot_data(i)
             # Genf
             case 103140:
-                genf_servette_data[i[1]] |= add_shot_data(i)
+                if i[1] in genf_servette_data.keys(): 
+                  genf_servette_data[i[1]] |= add_shot_data(i)
             # Ajoie
             case 103144:
-                hc_ajoie_data[i[1]] |= add_shot_data(i)
+                if i[1] in hc_ajoie_data.keys():
+                  hc_ajoie_data[i[1]] |= add_shot_data(i)
             # Ambri
             case 101152:
-                hc_ambri_piotta_data[i[1]] |= add_shot_data(i)
+                if i[1] in hc_ambri_piotta_data.keys():
+                  hc_ambri_piotta_data[i[1]] |= add_shot_data(i)
             # Davos
             case 101151:
-                hc_davos_data[i[1]] |= add_shot_data(i)
+                if i[1] in hc_davos_data.keys():
+                  hc_davos_data[i[1]] |= add_shot_data(i)
             # Lugano
             case 101150:
-                hc_lugano_data[i[1]] |= add_shot_data(i)
+                if i[1] in hc_lugano_data.keys():
+                  hc_lugano_data[i[1]] |= add_shot_data(i)
             # Lausanne
             case 103141:
-                hc_lausanne_data[i[1]] |= add_shot_data(i)
+                if i[1] in hc_lausanne_data.keys():
+                  hc_lausanne_data[i[1]] |= add_shot_data(i)
             # Bern
             case 102126:
-                sc_bern_data[i[1]] |= add_shot_data(i)
+                if i[1] in sc_bern_data.keys():
+                  sc_bern_data[i[1]] |= add_shot_data(i)
             # Tigers
             case 102127:
-                scl_tigers_data[i[1]] |= add_shot_data(i)
+                if i[1] in scl_tigers_data.keys():
+                  scl_tigers_data[i[1]] |= add_shot_data(i)
             # Rappi
             case 101060:
-                rapperswil_jona_lakers_data[i[1]] |= add_shot_data(i)
+                if i[1] in rapperswil_jona_lakers_data.keys():
+                  rapperswil_jona_lakers_data[i[1]] |= add_shot_data(i)
             # ZSC
             case 101139:
-                zsc_lions_data[i[1]] |= add_shot_data(i)
+                if i[1] in zsc_lions_data.keys():
+                  zsc_lions_data[i[1]] |= add_shot_data(i)
     # now again the same for the faceoff data
     for i in faceoff_data['data']:
         team_id = i[2]['id']
@@ -456,46 +484,60 @@ def create_team_data():
                 # we could actually use again the functions but since the added values are 
                 # short enough to keep everything in one line, we stick to the update option 
                 # to demonstrate that we not only can merge but also add key values
-                ehc_biel_data[i[1]].update({'FO_total': i[5], 'FO_won': i[8], 'FO_lost': i[9]})
+                if i[1] in ehc_biel_data.keys():
+                  ehc_biel_data[i[1]].update({'FO_total': i[5], 'FO_won': i[8], 'FO_lost': i[9]})
             # Kloten 
             case 101149: 
-                ehc_kloten_data[i[1]].update({'FO_total': i[5], 'FO_won': i[8], 'FO_lost': i[9]})
+                if i[1] in ehc_kloten_data.keys():
+                  ehc_kloten_data[i[1]].update({'FO_total': i[5], 'FO_won': i[8], 'FO_lost': i[9]})
             # Zug
             case 101144:
-                ev_zug_data[i[1]].update({'FO_total': i[5], 'FO_won': i[8], 'FO_lost': i[9]})
+                if i[1] in ev_zug_data.keys():
+                  ev_zug_data[i[1]].update({'FO_total': i[5], 'FO_won': i[8], 'FO_lost': i[9]})
             # Fribourg 
             case 103138: 
-                fribourg_gotteron_data[i[1]].update({'FO_total': i[5], 'FO_won': i[8], 'FO_lost': i[9]})
+                if i[1] in fribourg_gotteron_data.keys():
+                  fribourg_gotteron_data[i[1]].update({'FO_total': i[5], 'FO_won': i[8], 'FO_lost': i[9]})
             # Genf
             case 103140: 
-                genf_servette_data[i[1]].update({'FO_total': i[5], 'FO_won': i[8], 'FO_lost': i[9]})
+                if i[1] in genf_servette_data.keys(): 
+                  genf_servette_data[i[1]].update({'FO_total': i[5], 'FO_won': i[8], 'FO_lost': i[9]})
             # Ajoie
             case 103144:
-                hc_ajoie_data[i[1]].update({'FO_total': i[5], 'FO_won': i[8], 'FO_lost': i[9]})
+                if i[1] in hc_ajoie_data.keys():
+                  hc_ajoie_data[i[1]].update({'FO_total': i[5], 'FO_won': i[8], 'FO_lost': i[9]})
             # Ambri 
             case 101152:
-                hc_ambri_piotta_data[i[1]].update({'FO_total': i[5], 'FO_won': i[8], 'FO_lost': i[9]})
+                if i[1] in hc_ambri_piotta_data.keys():
+                  hc_ambri_piotta_data[i[1]].update({'FO_total': i[5], 'FO_won': i[8], 'FO_lost': i[9]})
             # Davos
             case 101151:
-                hc_davos_data[i[1]].update({'FO_total': i[5], 'FO_won': i[8], 'FO_lost': i[9]})
+                if i[1] in hc_davos_data.keys():
+                  hc_davos_data[i[1]].update({'FO_total': i[5], 'FO_won': i[8], 'FO_lost': i[9]})
             # Lugano
             case 101150:
-                hc_lugano_data[i[1]].update({'FO_total': i[5], 'FO_won': i[8], 'FO_lost': i[9]})
+                if i[1] in hc_lugano_data.keys():
+                  hc_lugano_data[i[1]].update({'FO_total': i[5], 'FO_won': i[8], 'FO_lost': i[9]})
             # Lausanne
             case 103141: 
-                hc_lausanne_data[i[1]].update({'FO_total': i[5], 'FO_won': i[8], 'FO_lost': i[9]})
+                if i[1] in hc_lausanne_data.keys():
+                  hc_lausanne_data[i[1]].update({'FO_total': i[5], 'FO_won': i[8], 'FO_lost': i[9]})
             # Bern
             case 102126:
-                sc_bern_data[i[1]].update({'FO_total': i[5], 'FO_won': i[8], 'FO_lost': i[9]})
+                if i[1] in sc_bern_data.keys():
+                  sc_bern_data[i[1]].update({'FO_total': i[5], 'FO_won': i[8], 'FO_lost': i[9]})
             # Tigers
             case 102127:
-                scl_tigers_data[i[1]].update({'FO_total': i[5], 'FO_won': i[8], 'FO_lost': i[9]})
+                if i[1] in scl_tigers_data.keys():
+                  scl_tigers_data[i[1]].update({'FO_total': i[5], 'FO_won': i[8], 'FO_lost': i[9]})
             # Rappi 
             case 101060:
-                rapperswil_jona_lakers_data[i[1]].update({'FO_total': i[5], 'FO_won': i[8], 'FO_lost': i[9]})
+                if i[1] in rapperswil_jona_lakers_data.keys():
+                  rapperswil_jona_lakers_data[i[1]].update({'FO_total': i[5], 'FO_won': i[8], 'FO_lost': i[9]})
             # ZSC
             case 101139:
-                zsc_lions_data[i[1]].update({'FO_total': i[5], 'FO_won': i[8], 'FO_lost': i[9]})
+                if i[1] in zsc_lions_data.keys():
+                  zsc_lions_data[i[1]].update({'FO_total': i[5], 'FO_won': i[8], 'FO_lost': i[9]})
 
     # and now the goalie data
     # different as above we go through both lists (summary and shots agains data) at the same time in one 
@@ -567,7 +609,15 @@ def get_game_info ():
                    + ORDER_BY_PAST_GAMES + STANDARD_ENDING + STANDARD_INFO)
     past_games = send_request(request_url)
     return (next_games, past_games)
-
+#
+# create a dictionary for 1 of the past 5 games based on the 
+# received game and the boolean which states if the team was playing
+# at home or away. We also add this to the game information, as this 
+# info will be passed to the output. You might wonder why a dictionary?
+# Well i like dictionaries, as they provide a sense of order and control
+# where as I can put anything into a list, in a dictionary I have some
+# structure, which increases the readability for me at least.
+#
 def create_game(i: list, home: bool) -> dict:
     
     if home is True: 
@@ -588,16 +638,31 @@ def create_game(i: list, home: bool) -> dict:
                 , 'Goals_received': i[5]['homeTeam']}
     
     return game
+
 def create_player_sheet(my_workbook: xlsxwriter.Workbook, my_worksheet: xlsxwriter.worksheet,home_team: team, away_team: team):
     start_row = 1
     start_column = 0
-
     my_column_pos = write_titels_to_worksheet_players(my_worksheet,start_row,start_column)
 
     home_format = my_workbook.add_format(TITLE_HOME_FORMAT)
-    #my_worksheet.write(0,0,'Stürmer',home_format)
     my_worksheet.merge_range(0,start_column,0,my_column_pos,'Stürmer',home_format)
 
+    start_column = (my_column_pos + 2)
+    my_column_pos = write_titels_to_worksheet_players(my_worksheet,start_row,start_column)
+
+    home_format = my_workbook.add_format(TITLE_HOME_FORMAT)
+    my_worksheet.merge_range(0,start_column,0,my_column_pos,'Verteidiger',home_format)
+    for i in home_team.player_data: 
+       match (home_team.player_data[i]['Position']):
+        case 'Stürmer':
+            start_write_col = 0
+        case 'Verteidiger':
+             start_write_col = start_column
+        # the python equivalent to WHEN OTHER
+        case _:
+             # in contrast to the expectation the continue statement actually
+             # ensures that loop skips the current iteration and goes to the next one
+             continue
 #
 # the actual main function
 #
@@ -613,7 +678,6 @@ def main() -> None:
     # are not taken with in this transformation) and we take the very first entry to give the dictionary the key
     # or said differently - the dictionary tells itself what the key is
     # and yes we could allocate the objects dynamically but i am too lazy for this atm
-    # @Selena ds isch wa i mein
     biel = team(102128,ehc_biel_data[list(ehc_biel_data)[0]]['Team'],ehc_biel_data)
     kloten = team(101149,ehc_kloten_data[list(ehc_kloten_data)[0]]['Team'],ehc_kloten_data)
     zug = team(101144,ev_zug_data[list(ev_zug_data)[0]]['Team'],ev_zug_data)
