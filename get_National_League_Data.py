@@ -638,32 +638,228 @@ def create_game(i: list, home: bool) -> dict:
                 , 'Goals_received': i[5]['homeTeam']}
     
     return game
-
+#
+#
+#
 def create_player_sheet(my_workbook: xlsxwriter.Workbook, my_worksheet: xlsxwriter.worksheet,home_team: team, away_team: team):
-    start_row = 1
+    start_row_title = 1
     start_column = 0
-    my_column_pos = write_titels_to_worksheet_players(my_worksheet,start_row,start_column)
+    my_column_pos = write_titels_to_worksheet_players(my_worksheet,start_row_title,start_column)
 
     home_format = my_workbook.add_format(TITLE_HOME_FORMAT)
     my_worksheet.merge_range(0,start_column,0,my_column_pos,'Stürmer',home_format)
 
     start_column = (my_column_pos + 2)
-    my_column_pos = write_titels_to_worksheet_players(my_worksheet,start_row,start_column)
+    my_column_pos = write_titels_to_worksheet_players(my_worksheet,start_row_title,start_column)
 
     home_format = my_workbook.add_format(TITLE_HOME_FORMAT)
     my_worksheet.merge_range(0,start_column,0,my_column_pos,'Verteidiger',home_format)
+    
+
+    count_forward = 1
+    count_defense = 1
     for i in home_team.player_data: 
-       match (home_team.player_data[i]['Position']):
-        case 'Stürmer':
-            start_write_col = 0
-        case 'Verteidiger':
-             start_write_col = start_column
-        # the python equivalent to WHEN OTHER
-        case _:
-             # in contrast to the expectation the continue statement actually
-             # ensures that loop skips the current iteration and goes to the next one
-             continue
-#
+
+        match (home_team.player_data[i]['Position']):
+            case 'Stürmer':
+                start_write_col = 0
+                count_forward += 1
+                start_row = count_forward
+            case 'Verteidiger':
+                start_write_col = start_column
+                count_defense += 1
+                start_row = count_defense
+            # the python equivalent to WHEN OTHER
+            case _:
+                # in contrast to the expectation the continue statement actually
+                # ensures that loop skips the current iteration and goes to the next one
+                continue
+        try:
+            my_worksheet.write(start_row,
+                           start_write_col,
+                           home_team.player_data[i]['Name'])
+        except: 
+           pass
+        start_write_col += 1
+
+        try:
+            my_worksheet.write(start_row,
+                           start_write_col,
+                           home_team.player_data[i]['Games_played'])
+        except: 
+           pass
+        start_write_col += 1
+
+        try:
+            my_worksheet.write(start_row,
+                           start_write_col,
+                           home_team.player_data[i]['Goals'])
+        except: 
+           pass
+        start_write_col += 1
+
+        try:
+            my_worksheet.write(start_row,
+                           start_write_col,
+                           home_team.player_data[i]['Assists'])
+        except: 
+           pass
+        start_write_col += 1
+
+        try:
+           my_worksheet.write(start_row,
+                           start_write_col,
+                           home_team.player_data[i]['Shots_total'])
+        except: 
+           pass
+        start_write_col += 1
+
+        try: 
+            my_worksheet.write(start_row,
+                           start_write_col,
+                           home_team.player_data[i]['Shots_from_slot'])
+        except:
+           pass
+        start_write_col += 1
+
+        try: 
+            my_worksheet.write(start_row,
+                           start_write_col,
+                           home_team.player_data[i]['Shots_missed'])
+        except:
+           pass
+        start_write_col += 1
+        try:
+            my_worksheet.write(start_row,
+                           start_write_col,
+                           home_team.player_data[i]['Shots_on_border'])
+        except:
+            pass
+        start_write_col += 1
+
+        try:
+            my_worksheet.write(start_row,
+                           start_write_col,
+                           home_team.player_data[i]['+/-'])
+        except:
+            pass
+        start_write_col += 1
+
+        try:
+            my_worksheet.write(start_row,
+                           start_write_col,
+                           home_team.player_data[i]['FO_total'])
+        except:
+            pass
+        start_write_col += 1
+
+        try:
+            my_worksheet.write(start_row,
+                           start_write_col,
+                           home_team.player_data[i]['FO_won'])
+        except:
+            pass
+        start_write_col += 1
+
+        try:
+            my_worksheet.write(start_row,
+                           start_write_col,
+                           home_team.player_data[i]['FO_lost'])
+        except:
+           pass
+        start_write_col += 1
+
+        try:
+            my_worksheet.write(start_row,
+                           start_write_col,
+                           home_team.player_data[i]['Blocked_shots'])
+        except:
+           pass
+        start_write_col += 1
+
+        try:
+            my_worksheet.write(start_row,
+                           start_write_col,
+                           home_team.player_data[i]['Box_Play_Goals'])
+        except:
+            pass
+        start_write_col += 1
+
+        try:
+            my_worksheet.write(start_row,
+                           start_write_col,
+                           home_team.player_data[i]['Box_Play_Assists'])
+        except: 
+           pass
+        start_write_col += 1
+
+        try:
+            my_worksheet.write(start_row,
+                           start_write_col,
+                           home_team.player_data[i]['PP_Goals'])
+        except: 
+           pass
+        start_write_col += 1
+
+        try:
+            my_worksheet.write(start_row,
+                           start_write_col,
+                           home_team.player_data[i]['PP_Assists'])
+        except: 
+           pass
+        start_write_col += 1
+
+        try:
+            my_worksheet.write(start_row,
+                           start_write_col,
+                           home_team.player_data[i]['PIM'])
+        except: 
+           pass
+
+    my_worksheet.add_table(1,0,count_forward,17,{'style': 'Table Style Light 17',
+                                             'columns': [{'header': 'Player'},
+                                                         {'header': 'GP'},
+                                                         {'header': 'Goals'},
+                                                         {'header': 'Assists'},
+                                                         {'header': 'Shots on Goal'},
+                                                         {'header': 'Schüsse aufs Tor aus Slot'},
+                                                         {'header': 'Schüsse nebes Tor'},
+                                                         {'header': 'Schüsse an die Torumrandung'},
+                                                         {'header': '+/-'},
+                                                         {'header': 'Bullys Total'},
+                                                         {'header': 'Gewonnene Bullys'},
+                                                         {'header': 'Verlorene Bullys'},
+                                                         {'header': 'Blocked Shots'},
+                                                         {'header': 'Shorthanders'},
+                                                         {'header': 'Shorthander Assists'},
+                                                         {'header': 'Powerplay Goals'},
+                                                         {'header': 'Powerplay Assists'},
+                                                         {'header': 'Penalty Minutes'},
+                                                         ]})
+    my_worksheet.add_table(1,start_column,count_defense,36,{'style': 'Table Style Light 17',
+                                             'columns': [{'header': 'Player'},
+                                                         {'header': 'GP'},
+                                                         {'header': 'Goals'},
+                                                         {'header': 'Assists'},
+                                                         {'header': 'Shots on Goal'},
+                                                         {'header': 'Schüsse aufs Tor aus Slot'},
+                                                         {'header': 'Schüsse nebes Tor'},
+                                                         {'header': 'Schüsse an die Torumrandung'},
+                                                         {'header': '+/-'},
+                                                         {'header': 'Bullys Total'},
+                                                         {'header': 'Gewonnene Bullys'},
+                                                         {'header': 'Verlorene Bullys'},
+                                                         {'header': 'Blocked Shots'},
+                                                         {'header': 'Shorthanders'},
+                                                         {'header': 'Shorthander Assists'},
+                                                         {'header': 'Powerplay Goals'},
+                                                         {'header': 'Powerplay Assists'},
+                                                         {'header': 'Penalty Minutes'},
+                                                         ]})
+    
+    
+    my_worksheet.autofit()
+# 
 # the actual main function
 #
 def main() -> None:
