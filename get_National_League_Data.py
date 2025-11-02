@@ -92,11 +92,22 @@ TITLE_HOME_FORMAT = {'bold': True
                      ,'font_color': 'White'
                      ,'font_size': 14
                      ,'bg_color': '#BE5014'}
+TEAM_NAME_HOME_FORMAT = {'bold': True
+                     ,'align': 'center'
+                     ,'font_color': 'White'
+                     ,'font_size': 17
+                     ,'bg_color': "#943C01"}
 TITLE_AWAY_FORMAT = {'bold': True
                      ,'align': 'center'
                      ,'font_color': 'White'
                      ,'font_size': 14
-                     ,'bg_color': '#0B3040'}
+                     ,'bg_color': '#366092'}
+TEAM_NAME_AWAY_FORMAT = {'bold': True
+                        ,'align': 'center'
+                        ,'font_color': 'White'
+                        ,'font_size': 17
+                        ,'bg_color': '#0B3040'}
+
 
 ##########################################################################
 # tha functions
@@ -642,22 +653,24 @@ def create_game(i: list, home: bool) -> dict:
 #
 #
 def create_player_sheet(my_workbook: xlsxwriter.Workbook, my_worksheet: xlsxwriter.worksheet,home_team: team, away_team: team):
-    start_row_title = 1
+    start_row_title = 2
     start_column = 0
     my_column_pos = write_titels_to_worksheet_players(my_worksheet,start_row_title,start_column)
 
     home_format = my_workbook.add_format(TITLE_HOME_FORMAT)
-    my_worksheet.merge_range(0,start_column,0,my_column_pos,'Stürmer',home_format)
+    my_worksheet.merge_range((start_row_title - 1),start_column,(start_row_title - 1),my_column_pos,'Stürmer',home_format)
 
     start_column = (my_column_pos + 2)
     my_column_pos = write_titels_to_worksheet_players(my_worksheet,start_row_title,start_column)
 
     home_format = my_workbook.add_format(TITLE_HOME_FORMAT)
-    my_worksheet.merge_range(0,start_column,0,my_column_pos,'Verteidiger',home_format)
+    my_worksheet.merge_range((start_row_title - 1),start_column,(start_row_title - 1),my_column_pos,'Verteidiger',home_format)
     
+    team_name_format = my_workbook.add_format(TEAM_NAME_HOME_FORMAT)
+    my_worksheet.merge_range((start_row_title - 2),0,(start_row_title - 2),my_column_pos,home_team.name,team_name_format)
 
-    count_forward = 1
-    count_defense = 1
+    count_forward = start_row_title
+    count_defense = start_row_title
     for i in home_team.player_data: 
 
         match (home_team.player_data[i]['Position']):
@@ -816,7 +829,7 @@ def create_player_sheet(my_workbook: xlsxwriter.Workbook, my_worksheet: xlsxwrit
         except: 
            pass
 
-    my_worksheet.add_table(1,0,count_forward,17,{'style': 'Table Style Light 17',
+    my_worksheet.add_table(start_row_title,0,count_forward,17,{'style': 'Table Style Light 21',
                                              'columns': [{'header': 'Player'},
                                                          {'header': 'GP'},
                                                          {'header': 'Goals'},
@@ -836,7 +849,7 @@ def create_player_sheet(my_workbook: xlsxwriter.Workbook, my_worksheet: xlsxwrit
                                                          {'header': 'Powerplay Assists'},
                                                          {'header': 'Penalty Minutes'},
                                                          ]})
-    my_worksheet.add_table(1,start_column,count_defense,36,{'style': 'Table Style Light 17',
+    my_worksheet.add_table(start_row_title,start_column,count_defense,my_column_pos,{'style': 'Table Style Light 21',
                                              'columns': [{'header': 'Player'},
                                                          {'header': 'GP'},
                                                          {'header': 'Goals'},
@@ -856,8 +869,222 @@ def create_player_sheet(my_workbook: xlsxwriter.Workbook, my_worksheet: xlsxwrit
                                                          {'header': 'Powerplay Assists'},
                                                          {'header': 'Penalty Minutes'},
                                                          ]})
-    
-    
+    # now the same for the guest team
+    start_column = 0
+    start_row_title = (max(count_defense, count_forward)) + 4
+    my_column_pos = write_titels_to_worksheet_players(my_worksheet,start_row_title, start_column)
+
+    away_format = my_workbook.add_format(TITLE_AWAY_FORMAT)
+    my_worksheet.merge_range((start_row_title - 1),start_column,(start_row_title - 1),my_column_pos,'Stürmer',away_format)
+
+    start_column = (my_column_pos + 2)
+    my_column_pos = write_titels_to_worksheet_players(my_worksheet,start_row_title, start_column)
+
+    away_format = my_workbook.add_format(TITLE_AWAY_FORMAT)
+    my_worksheet.merge_range((start_row_title - 1),start_column,(start_row_title - 1),my_column_pos,'Verteidiger',away_format)
+
+    team_name_format = my_workbook.add_format(TEAM_NAME_AWAY_FORMAT)
+    my_worksheet.merge_range((start_row_title - 2),0,(start_row_title - 2),my_column_pos,away_team.name,team_name_format)
+
+    count_forward = start_row_title
+    count_defense = start_row_title
+    for i in away_team.player_data: 
+
+        match (away_team.player_data[i]['Position']):
+            case 'Stürmer':
+                start_write_col = 0
+                count_forward += 1
+                start_row = count_forward
+            case 'Verteidiger':
+                start_write_col = start_column
+                count_defense += 1
+                start_row = count_defense
+            # the python equivalent to WHEN OTHER
+            case _:
+                # in contrast to the expectation the continue statement actually
+                # ensures that loop skips the current iteration and goes to the next one
+                continue
+        try:
+            my_worksheet.write(start_row,
+                           start_write_col,
+                           away_team.player_data[i]['Name'])
+        except: 
+           pass
+        start_write_col += 1
+
+        try:
+            my_worksheet.write(start_row,
+                           start_write_col,
+                           away_team.player_data[i]['Games_played'])
+        except: 
+           pass
+        start_write_col += 1
+
+        try:
+            my_worksheet.write(start_row,
+                           start_write_col,
+                           away_team.player_data[i]['Goals'])
+        except: 
+           pass
+        start_write_col += 1
+
+        try:
+            my_worksheet.write(start_row,
+                           start_write_col,
+                           away_team.player_data[i]['Assists'])
+        except: 
+           pass
+        start_write_col += 1
+
+        try:
+           my_worksheet.write(start_row,
+                           start_write_col,
+                           away_team.player_data[i]['Shots_total'])
+        except: 
+           pass
+        start_write_col += 1
+
+        try: 
+            my_worksheet.write(start_row,
+                           start_write_col,
+                           away_team.player_data[i]['Shots_from_slot'])
+        except:
+           pass
+        start_write_col += 1
+
+        try: 
+            my_worksheet.write(start_row,
+                           start_write_col,
+                           away_team.player_data[i]['Shots_missed'])
+        except:
+           pass
+        start_write_col += 1
+        try:
+            my_worksheet.write(start_row,
+                           start_write_col,
+                           away_team.player_data[i]['Shots_on_border'])
+        except:
+            pass
+        start_write_col += 1
+
+        try:
+            my_worksheet.write(start_row,
+                           start_write_col,
+                           away_team.player_data[i]['+/-'])
+        except:
+            pass
+        start_write_col += 1
+
+        try:
+            my_worksheet.write(start_row,
+                           start_write_col,
+                           away_team.player_data[i]['FO_total'])
+        except:
+            pass
+        start_write_col += 1
+
+        try:
+            my_worksheet.write(start_row,
+                           start_write_col,
+                           away_team.player_data[i]['FO_won'])
+        except:
+            pass
+        start_write_col += 1
+
+        try:
+            my_worksheet.write(start_row,
+                           start_write_col,
+                           away_team.player_data[i]['FO_lost'])
+        except:
+           pass
+        start_write_col += 1
+
+        try:
+            my_worksheet.write(start_row,
+                           start_write_col,
+                           away_team.player_data[i]['Blocked_shots'])
+        except:
+           pass
+        start_write_col += 1
+
+        try:
+            my_worksheet.write(start_row,
+                           start_write_col,
+                           away_team.player_data[i]['Box_Play_Goals'])
+        except:
+            pass
+        start_write_col += 1
+
+        try:
+            my_worksheet.write(start_row,
+                           start_write_col,
+                           away_team.player_data[i]['Box_Play_Assists'])
+        except: 
+           pass
+        start_write_col += 1
+
+        try:
+            my_worksheet.write(start_row,
+                           start_write_col,
+                           away_team.player_data[i]['PP_Goals'])
+        except: 
+           pass
+        start_write_col += 1
+
+        try:
+            my_worksheet.write(start_row,
+                           start_write_col,
+                           away_team.player_data[i]['PP_Assists'])
+        except: 
+           pass
+        start_write_col += 1
+
+        try:
+            my_worksheet.write(start_row,
+                           start_write_col,
+                           away_team.player_data[i]['PIM'])
+        except: 
+           pass
+    my_worksheet.add_table(start_row_title,0,count_forward,17,{'style': 'Table Style Light 16',
+                                             'columns': [{'header': 'Player'},
+                                                         {'header': 'GP'},
+                                                         {'header': 'Goals'},
+                                                         {'header': 'Assists'},
+                                                         {'header': 'Shots on Goal'},
+                                                         {'header': 'Schüsse aufs Tor aus Slot'},
+                                                         {'header': 'Schüsse nebes Tor'},
+                                                         {'header': 'Schüsse an die Torumrandung'},
+                                                         {'header': '+/-'},
+                                                         {'header': 'Bullys Total'},
+                                                         {'header': 'Gewonnene Bullys'},
+                                                         {'header': 'Verlorene Bullys'},
+                                                         {'header': 'Blocked Shots'},
+                                                         {'header': 'Shorthanders'},
+                                                         {'header': 'Shorthander Assists'},
+                                                         {'header': 'Powerplay Goals'},
+                                                         {'header': 'Powerplay Assists'},
+                                                         {'header': 'Penalty Minutes'},
+                                                         ]})
+    my_worksheet.add_table(start_row_title,start_column,count_defense,my_column_pos,{'style': 'Table Style Light 16',
+                                             'columns': [{'header': 'Player'},
+                                                         {'header': 'GP'},
+                                                         {'header': 'Goals'},
+                                                         {'header': 'Assists'},
+                                                         {'header': 'Shots on Goal'},
+                                                         {'header': 'Schüsse aufs Tor aus Slot'},
+                                                         {'header': 'Schüsse nebes Tor'},
+                                                         {'header': 'Schüsse an die Torumrandung'},
+                                                         {'header': '+/-'},
+                                                         {'header': 'Bullys Total'},
+                                                         {'header': 'Gewonnene Bullys'},
+                                                         {'header': 'Verlorene Bullys'},
+                                                         {'header': 'Blocked Shots'},
+                                                         {'header': 'Shorthanders'},
+                                                         {'header': 'Shorthander Assists'},
+                                                         {'header': 'Powerplay Goals'},
+                                                         {'header': 'Powerplay Assists'},
+                                                         {'header': 'Penalty Minutes'},
+                                                         ]})
     my_worksheet.autofit()
 # 
 # the actual main function
@@ -931,12 +1158,15 @@ def main() -> None:
                 lists_to_fill = False
                 # we need the break statement in order to escape the 'for loop' to come to the 'while loop'
                 break
-            
+
+    # iterate over the upcoming games, create a worksheet (also refered as tab) for each game in the excel
+    # and fill the player data
     for i in (next_games['data']):
         tab_name = ''
         tab_name = (team_dict[i[4]['id']].name) + "_" + (team_dict[i[5]['id']].name) + "_PD"
         my_worksheet = add_worksheet(my_excelfile, tab_name)
+        # the function does not return anything but we need to hand over the home as well as the away team 
+        # and since we have the ID as the key in the dictionary, it is quite easy to pass it over
         create_player_sheet(my_excelfile,my_worksheet,team_dict[i[4]['id']],team_dict[i[5]['id']])
-        break
     my_excelfile.close()
 main()
