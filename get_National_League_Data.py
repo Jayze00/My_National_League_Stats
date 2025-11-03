@@ -6,7 +6,7 @@ import json
 import re 
 import xlsxwriter
 import datetime 
-
+import statistics
 ##########################################################################
 # the objects
 ##########################################################################
@@ -270,8 +270,9 @@ def add_goalie_data(i: list, j: list) -> dict:
     # gathering and adding of data easier
     temp_dict = { 'Name': i[1]
                 , 'Team': i[2]['name']
+                , 'Games_played': i[3]
                 , 'Position': 'Torhüter'
-                , 'Goals_agains': i[4]
+                , 'Goals_against': i[4]
                 , 'Total_shots_agains': j[4]
                 , 'Total_save%': i[9]
                 , 'Shots_from_slot': j[6]
@@ -663,14 +664,104 @@ def create_player_sheet(my_workbook: xlsxwriter.Workbook, my_worksheet: xlsxwrit
     start_column = (my_column_pos + 2)
     my_column_pos = write_titels_to_worksheet_players(my_worksheet,start_row_title,start_column)
 
-    home_format = my_workbook.add_format(TITLE_HOME_FORMAT)
     my_worksheet.merge_range((start_row_title - 1),start_column,(start_row_title - 1),my_column_pos,'Verteidiger',home_format)
     
+    goalie_start_col = (my_column_pos + 2)
+    my_worksheet.merge_range((start_row_title - 1), goalie_start_col, (start_row_title - 1), (goalie_start_col + 11), 'Goalie', home_format)
+
     team_name_format = my_workbook.add_format(TEAM_NAME_HOME_FORMAT)
-    my_worksheet.merge_range((start_row_title - 2),0,(start_row_title - 2),my_column_pos,home_team.name,team_name_format)
+    my_worksheet.merge_range((start_row_title - 2),0,(start_row_title - 2),(goalie_start_col + 11),home_team.name,team_name_format)
+
 
     count_forward = start_row_title
     count_defense = start_row_title
+    count_goalie = start_row_title
+    # forward stat data definition
+    average_gp_forward = 0
+    median_gp_forward = []
+    average_goals_forward = 0,00
+    median_goals_forward = []
+    average_assists_forward = 0,00
+    median_assists_forward = []
+    average_sog_forward = 0,00
+    median_sog_forward = []
+    average_slot_sog_forward = 0,00
+    median_shot_missed_forward = []
+    average_shot_missed_forward = 0,00
+    median_sob_forward = []
+    average_sob_forward = 0,00
+    median_slot_sog_forward = []
+    average_bilanz_forward = 0,00
+    median_bilanz_forward = []
+    average_bullies_forward = 0,00
+    median_bullies_forward = []
+    average_bullies_won_forward = 0,00
+    median_bullies_won_forward = []
+    average_bullies_lost_forward = 0,00
+    median_bullies_lost_forward = []
+    average_blocked_shots_forward = 0,00
+    median_blocked_shots_forward = []
+    average_bpa_forward = 0,00
+    median_bpa_forward = []
+    average_shs_forward = 0,00
+    median_shs_forward = []
+    average_ppg_forward = 0,00
+    median_ppg_forward = []
+    average_ppa_forward = 0,00
+    median_ppa_forward = []
+    average_pim_forward = 0,00
+    median_pim_forward = []
+    # defense stat data definition
+    average_gp_defense = 0,00
+    median_gp_defense = []
+    average_goals_defense = 0,00
+    median_goals_defense = []
+    average_assists_defense = 0,00
+    median_assists_defense = []
+    average_sog_defense = 0,00
+    median_sog_defense = []
+    average_slot_sog_defense = 0,00
+    median_shot_missed_defense = []
+    average_shot_missed_defense = 0,00
+    median_sob_defense = []
+    average_sob_defense = 0,00
+    median_slot_sog_defense = []
+    average_bilanz_defense = 0,00
+    median_bilanz_defense = []
+    average_bullies_defense = 0,00
+    median_bullies_defense = []
+    average_bullies_won_defense = 0,00
+    median_bullies_won_defense = []
+    average_bullies_lost_defense = 0,00
+    median_bullies_lost_defense = []
+    average_blocked_shots_defense = 0,00
+    median_blocked_shots_defense = []
+    average_bpa_defense = 0,00
+    median_bpa_defense = []
+    average_shs_defense = 0,00
+    median_shs_defense = []
+    average_ppg_defense = 0,00
+    median_ppg_defense = []
+    average_ppa_defense = 0,00
+    median_ppa_defense = []
+    average_pim_defense = 0,00
+    median_pim_defense = []
+    # goalie stat data definition 
+    total_gp = 0
+    total_pim = 0
+    total_received_goals = 0
+    total_saves_overall = 0
+    total_received_shots = 0
+    total_save_rate_overall = 0,00
+    total_shots_from_slot = 0
+    total_saves_from_slot_overall = 0
+    total_save_rate_slot = 0,00
+    total_missed_shots = 0
+    total_shots_on_frame = 0
+
+    forward_player_average = 0
+    defense_player_average = 0
+
     for i in home_team.player_data: 
 
         match (home_team.player_data[i]['Position']):
@@ -678,10 +769,190 @@ def create_player_sheet(my_workbook: xlsxwriter.Workbook, my_worksheet: xlsxwrit
                 start_write_col = 0
                 count_forward += 1
                 start_row = count_forward
+                median_gp_forward.append(int(home_team.player_data[i]['Games_played']))
+                median_goals_forward.append(int(home_team.player_data[i]['Goals']))
+                median_assists_forward.append(int(home_team.player_data[i]['Assists']))
+                median_sog_forward.append(int(home_team.player_data[i]['Shots_total']))
+                median_slot_sog_forward.append(int(home_team.player_data[i]['Shots_from_slot']))
+                median_shot_missed_forward.append(int(home_team.player_data[i]['Shots_missed']))
+                median_sob_forward.append(int(home_team.player_data[i]['Shots_on_border']))
+                median_bilanz_forward.append(int(home_team.player_data[i]['+/-']))
+                median_bullies_forward.append(int(home_team.player_data[i]['FO_total']))
+                median_bullies_won_forward.append(int(home_team.player_data[i]['FO_won']))
+                median_bullies_lost_forward.append(int(home_team.player_data[i]['FO_lost']))
+                median_blocked_shots_forward.append(int(home_team.player_data[i]['Blocked_shots']))
+                median_shs_forward.append(int(home_team.player_data[i]['Box_Play_Goals']))
+                median_bpa_forward.append(int(home_team.player_data[i]['Box_Play_Assists']))
+                median_ppg_forward.append(int(home_team.player_data[i]['PP_Goals']))
+                median_ppa_forward.append(int(home_team.player_data[i]['PP_Assists']))
+                median_pim_forward.append(int(home_team.player_data[i]['PIM']))
+
+                if int(home_team.player_data[i]['Games_played']) >= 5:
+                    forward_player_average += 1
+                    temp = float(home_team.player_data[i]['Games_played'])
+                    res = average_gp_forward + temp
+                    average_gp_forward = res
+                    average_goals_forward = sum(average_goals_forward,float(home_team.player_data[i]['Goals']))
+                    average_assists_forward = sum(average_assists_forward,float(home_team.player_data[i]['Assists']))
+                    average_sog_forward = sum(average_sog_forward,float(home_team.player_data[i]['Shots_total']))
+                    average_slot_sog_forward = sum(average_slot_sog_forward,float(home_team.player_data[i]['Shots_from_slot']))
+                    average_shot_missed_forward = sum(average_shot_missed_forward,float(home_team.player_data[i]['Shots_missed']))
+                    average_sob_forward = sum(average_sob_forward,float(home_team.player_data[i]['Shots_on_border']))
+                    average_bilanz_forward = sum(average_bilanz_forward,float(home_team.player_data[i]['+/-']))
+                    average_bullies_forward = sum(average_bullies_forward,float(home_team.player_data[i]['FO_total']))
+                    average_bullies_won_forward = sum(average_bullies_won_forward,float(home_team.player_data[i]['FO_won']))
+                    average_bullies_lost_forward = sum(average_bullies_lost_forward,float(home_team.player_data[i]['FO_lost']))
+                    average_blocked_shots_forward = sum(average_blocked_shots_forward,float(home_team.player_data[i]['Blocked_shots']))
+                    average_shs_forward = sum(average_shs_forward,float(home_team.player_data[i]['Box_Play_Goals']))
+                    average_bpa_forward = sum(average_bpa_forward,float(home_team.player_data[i]['Box_Play_Assists']))
+                    average_ppg_forward = sum(average_ppg_forward,float(home_team.player_data[i]['PP_Goals']))
+                    average_ppa_forward = sum(average_ppa_forward,float(home_team.player_data[i]['PP_Assists']))
+                    average_pim_forward = sum(average_pim_forward,float(home_team.player_data[i]['PIM']))
             case 'Verteidiger':
                 start_write_col = start_column
                 count_defense += 1
                 start_row = count_defense
+                median_gp_defense.append(int(home_team.player_data[i]['Games_played']))
+                median_goals_defense.append(int(home_team.player_data[i]['Goals']))
+                median_assists_defense.append(int(home_team.player_data[i]['Assists']))
+                median_sog_defense.append(int(home_team.player_data[i]['Shots_total']))
+                median_slot_sog_defense.append(int(home_team.player_data[i]['Shots_from_slot']))
+                median_shot_missed_defense.append(int(home_team.player_data[i]['Shots_missed']))
+                median_sob_defense.append(int(home_team.player_data[i]['Shots_on_border']))
+                median_bilanz_defense.append(int(home_team.player_data[i]['+/-']))
+                median_bullies_defense.append(int(home_team.player_data[i]['FO_total']))
+                median_bullies_won_defense.append(int(home_team.player_data[i]['FO_won']))
+                median_bullies_lost_defense.append(int(home_team.player_data[i]['FO_lost']))
+                median_blocked_shots_defense.append(int(home_team.player_data[i]['Blocked_shots']))
+                median_shs_defense.append(int(home_team.player_data[i]['Box_Play_Goals']))
+                median_bpa_defense.append(int(home_team.player_data[i]['Box_Play_Assists']))
+                median_ppg_defense.append(int(home_team.player_data[i]['PP_Goals']))
+                median_ppa_defense.append(int(home_team.player_data[i]['PP_Assists']))
+                median_pim_defense.append(int(home_team.player_data[i]['PIM']))
+
+                if int(home_team.player_data[i]['Games_played']) >= 5:
+                    defense_player_average += 1
+                    average_gp_defense = sum(average_gp_defense,(float(home_team.player_data[i]['Games_played'])))
+                    average_goals_defense = sum(average_goals_defense,float(home_team.player_data[i]['Goals']))
+                    average_assists_defense = sum(average_assists_defense,float(home_team.player_data[i]['Assists']))
+                    average_sog_defense = sum(average_sog_defense,float(home_team.player_data[i]['Shots_total']))
+                    average_slot_sog_defense = sum(average_slot_sog_defense,float(home_team.player_data[i]['Shots_from_slot']))
+                    average_shot_missed_defense = sum(average_shot_missed_defense,float(home_team.player_data[i]['Shots_missed']))
+                    average_sob_defense = sum(average_sob_defense,float(home_team.player_data[i]['Shots_on_border']))
+                    average_bilanz_defense = sum(average_bilanz_defense,float(home_team.player_data[i]['+/-']))
+                    average_bullies_defense = sum(average_bullies_defense,float(home_team.player_data[i]['FO_total']))
+                    average_bullies_won_defense = sum(average_bullies_won_defense,float(home_team.player_data[i]['FO_won']))
+                    average_bullies_lost_defense = sum(average_bullies_lost_defense,float(home_team.player_data[i]['FO_lost']))
+                    average_blocked_shots_defense = sum(average_blocked_shots_defense,float(home_team.player_data[i]['Blocked_shots']))
+                    average_shs_defense = sum(average_shs_defense,float(home_team.player_data[i]['Box_Play_Goals']))
+                    average_bpa_defense = sum(average_bpa_defense,float(home_team.player_data[i]['Box_Play_Assists']))
+                    average_ppg_defense = sum(average_ppg_defense,float(home_team.player_data[i]['PP_Goals']))
+                    average_ppa_defense = sum(average_ppa_defense,float(home_team.player_data[i]['PP_Assists']))
+                    average_pim_defense = sum(average_pim_defense,float(home_team.player_data[i]['PIM']))
+            case 'Torhüter':
+              start_write_col = goalie_start_col
+              count_goalie += 1
+              start_row = count_goalie
+
+              try:
+                my_worksheet.write(start_row,
+                           start_write_col,
+                           home_team.player_data[i]['Name'])
+
+              except: 
+                pass
+              start_write_col += 1
+              try:
+                my_worksheet.write(start_row,
+                           start_write_col,
+                           home_team.player_data[i]['Games_played'])
+                total_gp = sum(total_gp,(int(home_team.player_data[i]['Games_played'])))
+              except: 
+                pass
+              start_write_col += 1
+              try:
+                my_worksheet.write(start_row,
+                           start_write_col,
+                           home_team.player_data[i]['Goals_against'])
+                total_received_goals = sum(total_received_goals,int(home_team.player_data[i]['Goals_against']))
+              except: 
+                pass
+              start_write_col += 1
+              try:
+                my_worksheet.write(start_row,
+                           start_write_col,
+                           home_team.player_data[i]['Total_shots_agains'])
+                total_received_shots = sum(total_received_shots,int(home_team.player_data[i]['Total_shots_agains']))
+              except: 
+                pass
+              start_write_col += 1
+              total_shots = int(home_team.player_data[i]['Total_shots_agains'])
+              total_save_rate = float(home_team.player_data[i]['Total_save%'])
+              total_save_rate_overall = sum(total_save_rate_overall,total_save_rate)
+              total_saves = round((total_shots/100) * total_save_rate)
+              total_saves_overall = sum(total_saves_overall,total_saves)
+              my_worksheet.write(start_row,
+                           start_write_col,
+                           total_saves)
+              start_write_col += 1
+              try:
+                my_worksheet.write(start_row,
+                           start_write_col,
+                           home_team.player_data[i]['Total_save%'])
+              except: 
+                pass
+              start_write_col += 1
+              try:
+                my_worksheet.write(start_row,
+                           start_write_col,
+                           home_team.player_data[i]['Shots_from_slot'])
+                total_shots_from_slot = sum(total_shots_from_slot,int(home_team.player_data[i]['Shots_from_slot']))
+              except: 
+                pass
+              start_write_col += 1
+              shots_from_slot = int(home_team.player_data[i]['Shots_from_slot'])
+              slot_save_rate = float(home_team.player_data[i]['Slot_save%'])
+              total_save_rate_slot = sum(total_save_rate_slot,slot_save_rate)
+
+              slot_saves = round((shots_from_slot/100) * slot_save_rate)
+              total_saves_from_slot_overall = sum(total_saves_from_slot_overall,slot_saves)
+              my_worksheet.write(start_row,
+                           start_write_col,
+                           slot_saves)
+              start_write_col += 1
+              try:
+                my_worksheet.write(start_row,
+                           start_write_col,
+                           home_team.player_data[i]['Slot_save%'])
+              except: 
+                pass
+              start_write_col += 1
+              try:
+                my_worksheet.write(start_row,
+                           start_write_col,
+                           home_team.player_data[i]['Missed_shots'])
+                total_missed_shots = sum(total_missed_shots,int(home_team.player_data[i]['Missed_shots']))
+              except: 
+                pass
+              start_write_col += 1
+              try:
+                my_worksheet.write(start_row,
+                           start_write_col,
+                           home_team.player_data[i]['Shots_against_border'])
+                total_shots_on_frame = sum(total_shots_on_frame,int(home_team.player_data[i]['Shots_against_border']))
+              except: 
+                pass
+              start_write_col += 1
+              try:
+                my_worksheet.write(start_row,
+                           start_write_col,
+                           home_team.player_data[i]['PIM'])
+                total_pim = sum(total_pim,int(home_team.player_data[i]['PIM']))
+              except: 
+                pass
+              
+              continue
+              
             # the python equivalent to WHEN OTHER
             case _:
                 # in contrast to the expectation the continue statement actually
@@ -828,6 +1099,102 @@ def create_player_sheet(my_workbook: xlsxwriter.Workbook, my_worksheet: xlsxwrit
                            home_team.player_data[i]['PIM'])
         except: 
            pass
+    # write the average line
+    # first for the forward
+    start_write_col = 0
+    count_forward += 1
+    start_row = count_forward
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           (home_team.name + " Durchschnitt (min 5 Spiele)"))
+    start_write_col += 1
+    average_gp_forward = average_gp_forward / forward_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_gp_forward)
+    start_write_col += 1
+    average_goals_forward = average_goals_forward / forward_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_goals_forward)
+    start_write_col += 1
+    average_assists_forward = average_assists_forward / forward_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_assists_forward)
+    start_write_col += 1
+    average_sog_forward = average_sog_forward / forward_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_sog_forward)
+    start_write_col += 1
+
+    average_slot_sog_forward = average_slot_sog_forward / forward_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_slot_sog_forward)
+    start_write_col += 1
+
+    average_shot_missed_forward = average_shot_missed_forward / forward_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_shot_missed_forward)
+    start_write_col += 1
+    average_sob_forward = average_sob_forward / forward_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_sob_forward)
+    start_write_col += 1
+    average_bilanz_forward = average_bilanz_forward / forward_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_bilanz_forward)
+    start_write_col += 1
+    average_bullies_forward = average_bullies_forward / forward_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_bullies_forward)
+    start_write_col += 1
+    average_bullies_won_forward = average_bullies_won_forward / forward_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_bullies_won_forward)
+    start_write_col += 1
+    average_bullies_lost_forward = average_bullies_lost_forward / forward_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_bullies_lost_forward)
+    start_write_col += 1
+    average_blocked_shots_forward = average_blocked_shots_forward / forward_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_blocked_shots_forward)
+    start_write_col += 1
+    average_shs_forward = average_shs_forward / forward_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_shs_forward)
+    start_write_col += 1
+    average_bpa_forward = average_bpa_forward / forward_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_bpa_forward)
+    start_write_col += 1
+    average_ppg_forward = average_ppg_forward / forward_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_ppg_forward)
+    start_write_col += 1
+    average_ppa_forward = average_ppa_forward / forward_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_ppa_forward)
+    start_write_col += 1
+    average_pim_forward = average_pim_forward / forward_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_pim_forward)
+
 
     my_worksheet.add_table(start_row_title,0,count_forward,17,{'style': 'Table Style Light 21',
                                              'columns': [{'header': 'Player'},
@@ -869,6 +1236,20 @@ def create_player_sheet(my_workbook: xlsxwriter.Workbook, my_worksheet: xlsxwrit
                                                          {'header': 'Powerplay Assists'},
                                                          {'header': 'Penalty Minutes'},
                                                          ]})
+    my_worksheet.add_table(start_row_title,goalie_start_col,count_goalie,(goalie_start_col + 11),{'style': 'Table Style Light 21',
+                                             'columns': [{'header': 'Player'},
+                                                         {'header': 'GP'},
+                                                         {'header': 'Erhaltene Tore'},
+                                                         {'header': 'Schüsse aufs Tor'},
+                                                         {'header': 'Saves'},
+                                                         {'header': 'Saves %'},
+                                                         {'header': 'Schüsse aus dem Slot'},
+                                                         {'header': 'Slot Saves'},
+                                                         {'header': 'Slot Save %'},
+                                                         {'header': 'Schüsse neben das Tor'},
+                                                         {'header': 'Schüsse an die Torumrandung'},
+                                                         {'header': 'Penalty Minutes'}
+                                                         ]})
     # now the same for the guest team
     start_column = 0
     start_row_title = (max(count_defense, count_forward)) + 4
@@ -880,14 +1261,101 @@ def create_player_sheet(my_workbook: xlsxwriter.Workbook, my_worksheet: xlsxwrit
     start_column = (my_column_pos + 2)
     my_column_pos = write_titels_to_worksheet_players(my_worksheet,start_row_title, start_column)
 
-    away_format = my_workbook.add_format(TITLE_AWAY_FORMAT)
     my_worksheet.merge_range((start_row_title - 1),start_column,(start_row_title - 1),my_column_pos,'Verteidiger',away_format)
 
+    goalie_start_col = (my_column_pos + 2)
+    my_worksheet.merge_range((start_row_title - 1), goalie_start_col, (start_row_title - 1), (goalie_start_col + 11), 'Goalie', away_format)
+
     team_name_format = my_workbook.add_format(TEAM_NAME_AWAY_FORMAT)
-    my_worksheet.merge_range((start_row_title - 2),0,(start_row_title - 2),my_column_pos,away_team.name,team_name_format)
+    my_worksheet.merge_range((start_row_title - 2),0,(start_row_title - 2),(goalie_start_col + 11),away_team.name,team_name_format)
 
     count_forward = start_row_title
     count_defense = start_row_title
+    count_goalie = start_row_title
+    # reset the stat data definitions
+        # forward stat data definition
+    average_gp_forward = 0
+    median_gp_forward.clear()
+    average_goals_forward = 0,00
+    median_goals_forward.clear()
+    average_assists_forward = 0,00
+    median_assists_forward.clear()
+    average_sog_forward = 0,00
+    median_sog_forward.clear()
+    average_slot_sog_forward = 0,00
+    median_shot_missed_forward.clear()
+    average_shot_missed_forward = 0,00
+    median_sob_forward.clear()
+    average_sob_forward = 0,00
+    median_slot_sog_forward.clear()
+    average_bilanz_forward = 0,00
+    median_bilanz_forward.clear()
+    average_bullies_forward = 0,00
+    median_bullies_forward.clear()
+    average_bullies_won_forward = 0,00
+    median_bullies_won_forward.clear()
+    average_bullies_lost_forward = 0,00
+    median_bullies_lost_forward.clear()
+    average_blocked_shots_forward = 0,00
+    median_blocked_shots_forward.clear()
+    average_bpa_forward = 0,00
+    median_bpa_forward.clear()
+    average_shs_forward = 0,00
+    median_shs_forward.clear()
+    average_ppg_forward = 0,00
+    median_ppg_forward.clear()
+    average_ppa_forward = 0,00
+    median_ppa_forward.clear()
+    average_pim_forward = 0,00
+    median_pim_forward.clear()
+    # defense stat data definition
+    average_gp_defense = 0,00
+    median_gp_defense.clear()
+    average_goals_defense = 0,00
+    median_goals_defense.clear()
+    average_assists_defense = 0,00
+    median_assists_defense.clear()
+    average_sog_defense = 0,00
+    median_sog_defense.clear()
+    average_slot_sog_defense = 0,00
+    median_shot_missed_defense.clear()
+    average_shot_missed_defense = 0,00
+    median_sob_defense.clear()
+    average_sob_defense = 0,00
+    median_slot_sog_defense.clear()
+    average_bilanz_defense = 0,00
+    median_bilanz_defense.clear()
+    average_bullies_defense = 0,00
+    median_bullies_defense.clear()
+    average_bullies_won_defense = 0,00
+    median_bullies_won_defense.clear()
+    average_bullies_lost_defense = 0,00
+    median_bullies_lost_defense.clear()
+    average_blocked_shots_defense = 0,00
+    median_blocked_shots_defense.clear()
+    average_bpa_defense = 0,00
+    median_bpa_defense.clear()
+    average_shs_defense = 0,00
+    median_shs_defense.clear()
+    average_ppg_defense = 0,00
+    median_ppg_defense.clear()
+    average_ppa_defense = 0,00
+    median_ppa_defense.clear()
+    average_pim_defense = 0,00
+    median_pim_defense.clear()
+    # goalie stat data definition 
+    total_gp = 0
+    total_pim = 0
+    total_received_goals = 0
+    total_saves_overall = 0
+    total_received_shots = 0
+    total_save_rate_overall = 0,00
+    total_shots_from_slot = 0
+    total_saves_from_slot_overall = 0
+    total_save_rate_slot = 0,00
+    total_missed_shots = 0
+    total_shots_on_frame = 0
+
     for i in away_team.player_data: 
 
         match (away_team.player_data[i]['Position']):
@@ -895,10 +1363,188 @@ def create_player_sheet(my_workbook: xlsxwriter.Workbook, my_worksheet: xlsxwrit
                 start_write_col = 0
                 count_forward += 1
                 start_row = count_forward
+                median_gp_forward.append(int(away_team.player_data[i]['Games_played']))
+                median_goals_forward.append(int(away_team.player_data[i]['Goals']))
+                median_assists_forward.append(int(away_team.player_data[i]['Assists']))
+                median_sog_forward.append(int(away_team.player_data[i]['Shots_total']))
+                median_slot_sog_forward.append(int(away_team.player_data[i]['Shots_from_slot']))
+                median_shot_missed_forward.append(int(away_team.player_data[i]['Shots_missed']))
+                median_sob_forward.append(int(away_team.player_data[i]['Shots_on_border']))
+                median_bilanz_forward.append(int(away_team.player_data[i]['+/-']))
+                median_bullies_forward.append(int(away_team.player_data[i]['FO_total']))
+                median_bullies_won_forward.append(int(away_team.player_data[i]['FO_won']))
+                median_bullies_lost_forward.append(int(away_team.player_data[i]['FO_lost']))
+                median_blocked_shots_forward.append(int(away_team.player_data[i]['Blocked_shots']))
+                median_shs_forward.append(int(away_team.player_data[i]['Box_Play_Goals']))
+                median_bpa_forward.append(int(away_team.player_data[i]['Box_Play_Assists']))
+                median_ppg_forward.append(int(away_team.player_data[i]['PP_Goals']))
+                median_ppa_forward.append(int(away_team.player_data[i]['PP_Assists']))
+                median_pim_forward.append(int(away_team.player_data[i]['PIM']))
+
+                if int(away_team.player_data[i]['Games_played']) >= 5:
+                    forward_player_average += 1
+                    res = sum([average_gp_forward,(float(away_team.player_data[i]['Games_played']))])
+                    average_gp_forward = res
+                    average_goals_forward = sum(average_goals_forward,float(away_team.player_data[i]['Goals']))
+                    average_assists_forward = sum(average_assists_forward,float(away_team.player_data[i]['Assists']))
+                    average_sog_forward = sum(average_sog_forward,float(away_team.player_data[i]['Shots_total']))
+                    average_slot_sog_forward = sum(average_slot_sog_forward,float(away_team.player_data[i]['Shots_from_slot']))
+                    average_shot_missed_forward = sum(average_shot_missed_forward,float(away_team.player_data[i]['Shots_missed']))
+                    average_sob_forward = sum(average_sob_forward,float(away_team.player_data[i]['Shots_on_border']))
+                    average_bilanz_forward = sum(average_bilanz_forward,float(away_team.player_data[i]['+/-']))
+                    average_bullies_forward = sum(average_bullies_forward,float(away_team.player_data[i]['FO_total']))
+                    average_bullies_won_forward = sum(average_bullies_won_forward,float(away_team.player_data[i]['FO_won']))
+                    average_bullies_lost_forward = sum(average_bullies_lost_forward,float(away_team.player_data[i]['FO_lost']))
+                    average_blocked_shots_forward = sum(average_blocked_shots_forward,float(away_team.player_data[i]['Blocked_shots']))
+                    average_shs_forward = sum(average_shs_forward,float(away_team.player_data[i]['Box_Play_Goals']))
+                    average_bpa_forward = sum(average_bpa_forward,float(away_team.player_data[i]['Box_Play_Assists']))
+                    average_ppg_forward = sum(average_ppg_forward,float(away_team.player_data[i]['PP_Goals']))
+                    average_ppa_forward = sum(average_ppa_forward,float(away_team.player_data[i]['PP_Assists']))
+                    average_pim_forward = sum(average_pim_forward,float(away_team.player_data[i]['PIM']))
             case 'Verteidiger':
                 start_write_col = start_column
                 count_defense += 1
                 start_row = count_defense
+                median_gp_defense.append(int(away_team.player_data[i]['Games_played']))
+                median_goals_defense.append(int(away_team.player_data[i]['Goals']))
+                median_assists_defense.append(int(away_team.player_data[i]['Assists']))
+                median_sog_defense.append(int(away_team.player_data[i]['Shots_total']))
+                median_slot_sog_defense.append(int(away_team.player_data[i]['Shots_from_slot']))
+                median_shot_missed_defense.append(int(away_team.player_data[i]['Shots_missed']))
+                median_sob_defense.append(int(away_team.player_data[i]['Shots_on_border']))
+                median_bilanz_defense.append(int(away_team.player_data[i]['+/-']))
+                median_bullies_defense.append(int(away_team.player_data[i]['FO_total']))
+                median_bullies_won_defense.append(int(away_team.player_data[i]['FO_won']))
+                median_bullies_lost_defense.append(int(away_team.player_data[i]['FO_lost']))
+                median_blocked_shots_defense.append(int(away_team.player_data[i]['Blocked_shots']))
+                median_shs_defense.append(int(away_team.player_data[i]['Box_Play_Goals']))
+                median_bpa_defense.append(int(away_team.player_data[i]['Box_Play_Assists']))
+                median_ppg_defense.append(int(away_team.player_data[i]['PP_Goals']))
+                median_ppa_defense.append(int(away_team.player_data[i]['PP_Assists']))
+                median_pim_defense.append(int(away_team.player_data[i]['PIM']))
+
+                if int(away_team.player_data[i]['Games_played']) >= 5:
+                    defense_player_average += 1
+                    average_gp_defense = sum(average_gp_defense,(float(away_team.player_data[i]['Games_played'])))
+                    average_goals_defense = sum(average_goals_defense,float(away_team.player_data[i]['Goals']))
+                    average_assists_defense = sum(average_assists_defense,float(away_team.player_data[i]['Assists']))
+                    average_sog_defense = sum(average_sog_defense,float(away_team.player_data[i]['Shots_total']))
+                    average_slot_sog_defense = sum(average_slot_sog_defense,float(away_team.player_data[i]['Shots_from_slot']))
+                    average_shot_missed_defense = sum(average_shot_missed_defense,float(away_team.player_data[i]['Shots_missed']))
+                    average_sob_defense = sum(average_sob_defense,float(away_team.player_data[i]['Shots_on_border']))
+                    average_bilanz_defense = sum(average_bilanz_defense,float(away_team.player_data[i]['+/-']))
+                    average_bullies_defense = sum(average_bullies_defense,float(away_team.player_data[i]['FO_total']))
+                    average_bullies_won_defense = sum(average_bullies_won_defense,float(away_team.player_data[i]['FO_won']))
+                    average_bullies_lost_defense = sum(average_bullies_lost_defense,float(away_team.player_data[i]['FO_lost']))
+                    average_blocked_shots_defense = sum(average_blocked_shots_defense,float(away_team.player_data[i]['Blocked_shots']))
+                    average_shs_defense = sum(average_shs_defense,float(away_team.player_data[i]['Box_Play_Goals']))
+                    average_bpa_defense = sum(average_bpa_defense,float(away_team.player_data[i]['Box_Play_Assists']))
+                    average_ppg_defense = sum(average_ppg_defense,float(away_team.player_data[i]['PP_Goals']))
+                    average_ppa_defense = sum(average_ppa_defense,float(away_team.player_data[i]['PP_Assists']))
+                    average_pim_defense = sum(average_pim_defense,float(away_team.player_data[i]['PIM']))
+            case 'Torhüter':
+              start_write_col = goalie_start_col
+              count_goalie += 1
+              start_row = count_goalie
+
+              try:
+                my_worksheet.write(start_row,
+                           start_write_col,
+                           away_team.player_data[i]['Name'])
+
+              except: 
+                pass
+              start_write_col += 1
+              try:
+                my_worksheet.write(start_row,
+                           start_write_col,
+                           away_team.player_data[i]['Games_played'])
+                total_gp = sum(total_gp,(int(away_team.player_data[i]['Games_played'])))
+              except: 
+                pass
+              start_write_col += 1
+              try:
+                my_worksheet.write(start_row,
+                           start_write_col,
+                           away_team.player_data[i]['Goals_against'])
+                total_received_goals = sum(total_received_goals,int(away_team.player_data[i]['Goals_against']))
+              except: 
+                pass
+              start_write_col += 1
+              try:
+                my_worksheet.write(start_row,
+                           start_write_col,
+                           away_team.player_data[i]['Total_shots_agains'])
+                total_received_shots = sum(total_received_shots,int(away_team.player_data[i]['Total_shots_agains']))
+              except: 
+                pass
+              start_write_col += 1
+              total_shots = int(away_team.player_data[i]['Total_shots_agains'])
+              total_save_rate = float(away_team.player_data[i]['Total_save%'])
+              total_save_rate_overall = sum(total_save_rate_overall,total_save_rate)
+              total_saves = round((total_shots/100) * total_save_rate)
+              total_saves_overall = sum(total_saves_overall,total_saves)
+              my_worksheet.write(start_row,
+                           start_write_col,
+                           total_saves)
+              start_write_col += 1
+              try:
+                my_worksheet.write(start_row,
+                           start_write_col,
+                           away_team.player_data[i]['Total_save%'])
+              except: 
+                pass
+              start_write_col += 1
+              try:
+                my_worksheet.write(start_row,
+                           start_write_col,
+                           away_team.player_data[i]['Shots_from_slot'])
+                total_shots_from_slot = sum(total_shots_from_slot,int(away_team.player_data[i]['Shots_from_slot']))
+              except: 
+                pass
+              start_write_col += 1
+              shots_from_slot = int(away_team.player_data[i]['Shots_from_slot'])
+              slot_save_rate = float(away_team.player_data[i]['Slot_save%'])
+              total_save_rate_slot = sum(total_save_rate_slot,slot_save_rate)
+
+              slot_saves = round((shots_from_slot/100) * slot_save_rate)
+              total_saves_from_slot_overall = sum(total_saves_from_slot_overall,slot_saves)
+              my_worksheet.write(start_row,
+                           start_write_col,
+                           slot_saves)
+              start_write_col += 1
+              try:
+                my_worksheet.write(start_row,
+                           start_write_col,
+                           away_team.player_data[i]['Slot_save%'])
+              except: 
+                pass
+              start_write_col += 1
+              try:
+                my_worksheet.write(start_row,
+                           start_write_col,
+                           away_team.player_data[i]['Missed_shots'])
+                total_missed_shots = sum(total_missed_shots,int(away_team.player_data[i]['Missed_shots']))
+              except: 
+                pass
+              start_write_col += 1
+              try:
+                my_worksheet.write(start_row,
+                           start_write_col,
+                           away_team.player_data[i]['Shots_against_border'])
+                total_shots_on_frame = sum(total_shots_on_frame,int(away_team.player_data[i]['Shots_against_border']))
+              except: 
+                pass
+              start_write_col += 1
+              try:
+                my_worksheet.write(start_row,
+                           start_write_col,
+                           away_team.player_data[i]['PIM'])
+                total_pim = sum(total_pim,int(away_team.player_data[i]['PIM']))
+              except: 
+                pass
+              
+              continue
             # the python equivalent to WHEN OTHER
             case _:
                 # in contrast to the expectation the continue statement actually
@@ -1084,6 +1730,21 @@ def create_player_sheet(my_workbook: xlsxwriter.Workbook, my_worksheet: xlsxwrit
                                                          {'header': 'Powerplay Goals'},
                                                          {'header': 'Powerplay Assists'},
                                                          {'header': 'Penalty Minutes'},
+                                                         ]})
+    
+    my_worksheet.add_table(start_row_title,goalie_start_col,count_goalie,(goalie_start_col + 11),{'style': 'Table Style Light 16',
+                                             'columns': [{'header': 'Player'},
+                                                         {'header': 'GP'},
+                                                         {'header': 'Erhaltene Tore'},
+                                                         {'header': 'Schüsse aufs Tor'},
+                                                         {'header': 'Saves'},
+                                                         {'header': 'Saves %'},
+                                                         {'header': 'Schüsse aus dem Slot'},
+                                                         {'header': 'Slot Saves'},
+                                                         {'header': 'Slot Save %'},
+                                                         {'header': 'Schüsse neben das Tor'},
+                                                         {'header': 'Schüsse an die Torumrandung'},
+                                                         {'header': 'Penalty Minutes'}
                                                          ]})
     my_worksheet.autofit()
 # 
