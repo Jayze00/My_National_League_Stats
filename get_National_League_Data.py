@@ -761,6 +761,7 @@ def create_player_sheet(my_workbook: xlsxwriter.Workbook, my_worksheet: xlsxwrit
 
     forward_player_average = 0
     defense_player_average = 0
+    goalie_player_count = 0
 
     for i in home_team.player_data: 
 
@@ -1119,6 +1120,7 @@ def create_player_sheet(my_workbook: xlsxwriter.Workbook, my_worksheet: xlsxwrit
                     res = temp + average_pim_defense
                     average_pim_defense = res 
             case 'Torhüter':
+              goalie_player_count += 1
               start_write_col = goalie_start_col
               count_goalie += 1
               start_row = count_goalie
@@ -1386,7 +1388,7 @@ def create_player_sheet(my_workbook: xlsxwriter.Workbook, my_worksheet: xlsxwrit
     start_row = count_forward
     my_worksheet.write(start_row,
                            start_write_col,
-                           (home_team.name + " Durchschnitt (min 5 Spiele)"))
+                           (home_team.name + " Stürmer Durchschnitt (min 5 Spiele)"))
     start_write_col += 1
     average_gp_forward = average_gp_forward / forward_player_average
     my_worksheet.write(start_row,
@@ -1480,7 +1482,7 @@ def create_player_sheet(my_workbook: xlsxwriter.Workbook, my_worksheet: xlsxwrit
     start_row = count_forward
     my_worksheet.write(start_row,
                            start_write_col,
-                           (home_team.name + " Median"))
+                           (home_team.name + " Stürmer Median"))
     start_write_col += 1
 
     temp = statistics.median(median_gp_forward)
@@ -1568,7 +1570,249 @@ def create_player_sheet(my_workbook: xlsxwriter.Workbook, my_worksheet: xlsxwrit
     my_worksheet.write(start_row,
                            start_write_col,
                            temp)
+    # and now the defense
+    start_write_col = start_column
+    count_defense += 1
+    start_row = count_defense
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           (home_team.name + " Verteidiger Durchschnitt (min 5 Spiele)"))
+    start_write_col += 1
+    average_gp_defense = average_gp_defense / defense_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_gp_defense)
+    start_write_col += 1
+    average_goals_defense = average_goals_defense / defense_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_goals_defense)
+    start_write_col += 1
+    average_assists_defense = average_assists_defense / defense_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_assists_defense)
+    start_write_col += 1
+    average_sog_defense = average_sog_defense / defense_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_sog_defense)
+    start_write_col += 1
+
+    average_slot_sog_defense = average_slot_sog_defense / defense_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_slot_sog_defense)
+    start_write_col += 1
+
+    average_shot_missed_defense = average_shot_missed_defense / defense_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_shot_missed_defense)
+    start_write_col += 1
+    average_sob_defense = average_sob_defense / defense_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_sob_defense)
+    start_write_col += 1
+    average_bilanz_defense = average_bilanz_defense / defense_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_bilanz_defense)
+    start_write_col += 1
+    average_bullies_defense = average_bullies_defense / defense_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_bullies_defense)
+    start_write_col += 1
+    average_bullies_won_defense = average_bullies_won_defense / defense_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_bullies_won_defense)
+    start_write_col += 1
+    average_bullies_lost_defense = average_bullies_lost_defense / defense_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_bullies_lost_defense)
+    start_write_col += 1
+    average_blocked_shots_defense = average_blocked_shots_defense / defense_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_blocked_shots_defense)
+    start_write_col += 1
+    average_shs_defense = average_shs_defense / defense_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_shs_defense)
+    start_write_col += 1
+    average_bpa_defense = average_bpa_defense / defense_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_bpa_defense)
+    start_write_col += 1
+    average_ppg_defense = average_ppg_defense / defense_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_ppg_defense)
+    start_write_col += 1
+    average_ppa_defense = average_ppa_defense / defense_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_ppa_defense)
+    start_write_col += 1
+    average_pim_defense = average_pim_defense / defense_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_pim_defense)
+
+    start_write_col = start_column
+    count_defense += 1
+    start_row = count_defense
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           (home_team.name + " Verteidiger Median"))
+    start_write_col += 1
+
+    temp = statistics.median(median_gp_defense)
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           temp)
+    start_write_col += 1
+    temp = statistics.median(median_goals_defense)
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           temp)
+    start_write_col += 1
+    temp = statistics.median(median_assists_defense)
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           temp)
+    start_write_col += 1
+    average_sog_defense = average_sog_defense / defense_player_average
+    temp = statistics.median(median_sog_defense)
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           temp)
+    start_write_col += 1
+    temp = statistics.median(median_slot_sog_defense)
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           temp)
+    start_write_col += 1
+    temp = statistics.median(median_shot_missed_defense)
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           temp)
+    start_write_col += 1
+    temp = statistics.median(median_sob_defense)
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           temp)
+    start_write_col += 1
+    temp = statistics.median(median_bilanz_defense)
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           temp)
+    start_write_col += 1
+    temp = statistics.median(median_bullies_defense)
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           temp)
+    start_write_col += 1
+    temp = statistics.median(median_bullies_won_defense)
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           temp)
+    start_write_col += 1
+    temp = statistics.median(median_bullies_lost_defense)
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           temp)
+    start_write_col += 1
+    temp = statistics.median(median_blocked_shots_defense)
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           temp)
+    start_write_col += 1
+    temp = statistics.median(median_shs_defense)
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           temp)
+    start_write_col += 1
+    temp = statistics.median(median_bpa_defense)
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           temp)
+    start_write_col += 1
+    temp = statistics.median(median_ppg_defense)
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           temp)
+    start_write_col += 1
+    temp = statistics.median(median_ppg_defense)
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           temp)
+    start_write_col += 1
+    temp = statistics.median(median_pim_defense)
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           temp)
+    # and now the goalie total 
+    start_write_col = goalie_start_col
+    count_goalie += 1
+    start_row = count_goalie
+
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           'Total')
+    start_write_col += 1
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           total_gp)
+    start_write_col += 1
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           total_received_goals)
+    start_write_col += 1
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           total_received_shots)
+    start_write_col += 1
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           total_saves_overall)
     
+    start_write_col += 1
+    total_save_rate_overall = total_save_rate_overall / goalie_player_count
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           total_save_rate_overall)
+    start_write_col += 1
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           total_shots_from_slot)
+    start_write_col += 1
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           total_saves_from_slot_overall)
+    start_write_col += 1
+    total_save_rate_slot = total_save_rate_slot / goalie_player_count
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           total_save_rate_slot)
+    start_write_col += 1
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           total_missed_shots)
+    start_write_col += 1
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           total_shots_on_frame)
+    start_write_col += 1
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           total_pim)
     my_worksheet.add_table(start_row_title,0,count_forward,17,{'style': 'Table Style Light 21',
                                              'columns': [{'header': 'Player'},
                                                          {'header': 'GP'},
@@ -1728,6 +1972,10 @@ def create_player_sheet(my_workbook: xlsxwriter.Workbook, my_worksheet: xlsxwrit
     total_save_rate_slot = 0
     total_missed_shots = 0
     total_shots_on_frame = 0
+
+    goalie_player_count = 0
+    forward_player_average = 0
+    defense_player_average = 0
 
     for i in away_team.player_data: 
 
@@ -2085,7 +2333,7 @@ def create_player_sheet(my_workbook: xlsxwriter.Workbook, my_worksheet: xlsxwrit
               start_write_col = goalie_start_col
               count_goalie += 1
               start_row = count_goalie
-
+              goalie_player_count += 1
               try:
                 my_worksheet.write(start_row,
                            start_write_col,
@@ -2346,7 +2594,7 @@ def create_player_sheet(my_workbook: xlsxwriter.Workbook, my_worksheet: xlsxwrit
     start_row = count_forward
     my_worksheet.write(start_row,
                            start_write_col,
-                           (away_team.name + " Durchschnitt (min 5 Spiele)"))
+                           (away_team.name + " Stürmer Durchschnitt (min 5 Spiele)"))
     start_write_col += 1
     average_gp_forward = average_gp_forward / forward_player_average
     my_worksheet.write(start_row,
@@ -2440,7 +2688,7 @@ def create_player_sheet(my_workbook: xlsxwriter.Workbook, my_worksheet: xlsxwrit
     start_row = count_forward
     my_worksheet.write(start_row,
                            start_write_col,
-                           (away_team.name + " Median"))
+                           (away_team.name + " Stürmer Median"))
     start_write_col += 1
 
     temp = statistics.median(median_gp_forward)
@@ -2528,6 +2776,251 @@ def create_player_sheet(my_workbook: xlsxwriter.Workbook, my_worksheet: xlsxwrit
     my_worksheet.write(start_row,
                            start_write_col,
                            temp)
+    # and now the defense
+    start_write_col = start_column
+    count_defense += 1
+    start_row = count_defense
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           (away_team.name + " Verteidiger Durchschnitt (min 5 Spiele)"))
+    start_write_col += 1
+
+    average_gp_defense = average_gp_defense / defense_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_gp_defense)
+    start_write_col += 1
+    average_goals_defense = average_goals_defense / defense_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_goals_defense)
+    start_write_col += 1
+    average_assists_defense = average_assists_defense / defense_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_assists_defense)
+    start_write_col += 1
+    average_sog_defense = average_sog_defense / defense_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_sog_defense)
+    start_write_col += 1
+
+    average_slot_sog_defense = average_slot_sog_defense / defense_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_slot_sog_defense)
+    start_write_col += 1
+
+    average_shot_missed_defense = average_shot_missed_defense / defense_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_shot_missed_defense)
+    start_write_col += 1
+    average_sob_defense = average_sob_defense / defense_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_sob_defense)
+    start_write_col += 1
+    average_bilanz_defense = average_bilanz_defense / defense_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_bilanz_defense)
+    start_write_col += 1
+    average_bullies_defense = average_bullies_defense / defense_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_bullies_defense)
+    start_write_col += 1
+    average_bullies_won_defense = average_bullies_won_defense / defense_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_bullies_won_defense)
+    start_write_col += 1
+    average_bullies_lost_defense = average_bullies_lost_defense / defense_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_bullies_lost_defense)
+    start_write_col += 1
+    average_blocked_shots_defense = average_blocked_shots_defense / defense_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_blocked_shots_defense)
+    start_write_col += 1
+    average_shs_defense = average_shs_defense / defense_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_shs_defense)
+    start_write_col += 1
+    average_bpa_defense = average_bpa_defense / defense_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_bpa_defense)
+    start_write_col += 1
+    average_ppg_defense = average_ppg_defense / defense_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_ppg_defense)
+    start_write_col += 1
+    average_ppa_defense = average_ppa_defense / defense_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_ppa_defense)
+    start_write_col += 1
+    average_pim_defense = average_pim_defense / defense_player_average
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           average_pim_defense)
+
+    start_write_col = start_column
+    count_defense += 1
+    start_row = count_defense
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           (away_team.name + " Verteidiger Median"))
+    start_write_col += 1
+
+    temp = statistics.median(median_gp_defense)
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           temp)
+    start_write_col += 1
+    temp = statistics.median(median_goals_defense)
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           temp)
+    start_write_col += 1
+    temp = statistics.median(median_assists_defense)
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           temp)
+    start_write_col += 1
+    average_sog_defense = average_sog_defense / defense_player_average
+    temp = statistics.median(median_sog_defense)
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           temp)
+    start_write_col += 1
+    temp = statistics.median(median_slot_sog_defense)
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           temp)
+    start_write_col += 1
+    temp = statistics.median(median_shot_missed_defense)
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           temp)
+    start_write_col += 1
+    temp = statistics.median(median_sob_defense)
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           temp)
+    start_write_col += 1
+    temp = statistics.median(median_bilanz_defense)
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           temp)
+    start_write_col += 1
+    temp = statistics.median(median_bullies_defense)
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           temp)
+    start_write_col += 1
+    temp = statistics.median(median_bullies_won_defense)
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           temp)
+    start_write_col += 1
+    temp = statistics.median(median_bullies_lost_defense)
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           temp)
+    start_write_col += 1
+    temp = statistics.median(median_blocked_shots_defense)
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           temp)
+    start_write_col += 1
+    temp = statistics.median(median_shs_defense)
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           temp)
+    start_write_col += 1
+    temp = statistics.median(median_bpa_defense)
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           temp)
+    start_write_col += 1
+    temp = statistics.median(median_ppg_defense)
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           temp)
+    start_write_col += 1
+    temp = statistics.median(median_ppg_defense)
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           temp)
+    start_write_col += 1
+    temp = statistics.median(median_pim_defense)
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           temp)
+    # now the goalie total 
+    start_write_col = goalie_start_col
+    count_goalie += 1
+    start_row = count_goalie
+
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           'Total')
+    start_write_col += 1
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           total_gp)
+    start_write_col += 1
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           total_received_goals)
+    start_write_col += 1
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           total_received_shots)
+    start_write_col += 1
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           total_saves_overall)
+    
+    start_write_col += 1
+    total_save_rate_overall = total_save_rate_overall / goalie_player_count
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           total_save_rate_overall)
+    start_write_col += 1
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           total_shots_from_slot)
+    start_write_col += 1
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           total_saves_from_slot_overall)
+    start_write_col += 1
+    total_save_rate_slot = total_save_rate_slot / goalie_player_count
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           total_save_rate_slot)
+    start_write_col += 1
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           total_missed_shots)
+    start_write_col += 1
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           total_shots_on_frame)
+    start_write_col += 1
+    my_worksheet.write(start_row,
+                           start_write_col,
+                           total_pim)
+    
     my_worksheet.add_table(start_row_title,0,count_forward,17,{'style': 'Table Style Light 16',
                                              'columns': [{'header': 'Player'},
                                                          {'header': 'GP'},
