@@ -5,6 +5,7 @@ import requests
 import json
 import re 
 import xlsxwriter
+from xlsxwriter.utility import cell_autofit_width
 import datetime 
 import statistics
 ##########################################################################
@@ -16,7 +17,34 @@ class team:
         self.name = name
         self.player_data = player_data
         self.past_5_games = []
-
+        self.amount_def_min_5 = None 
+        self.amount_forward_min_5 = None 
+        self.amount_import_min_5 = None
+        # data gets taken form seperate stat as it can be that players get
+        # traded and the data situation is not the best in such cases
+        # None is basically an Initialize of the container to tell that yes 
+        # there will be a variable 
+        self.amount_of_games = None 
+        self.goals_made = None 
+        self.goals_against = None 
+        self.goals_made_forward = None 
+        self.goals_made_defense = None 
+        self.goals_made_imports = None 
+        self.sog = None 
+        self.sog_slot = None
+        self.sob = None 
+        self.shots_missed = None
+        self.blocked_shots = None
+        self.sog_received = None 
+        self.sog_slot_received = None
+        self.pp_op = None 
+        self.time_in_pp = None
+        self.pp_goals = None 
+        self.pp_received_goals = None 
+        self.pk_situations = None 
+        self.pk_goals_received = None
+        self.time_in_pk = None 
+        self.shorthanders = None
 
 ##########################################################################
 # the variables 
@@ -42,6 +70,11 @@ SHOT_STAT = 'alias=playerShotDetail'
 FACEOFF_STAT = 'alias=playerFaceoff'
 GOALIE_SUMMARY_STAT = 'alias=goalkeeper'
 GOALIE_SHOT_STAT = 'alias=goalkeeperShotDetail'
+TEAM_GOAL_OVERVIEW = 'alias=teamGoal'
+TEAM_POSITION_GOALS = 'alias=teamGoalPosNation'
+TEAM_SHOT_DETAILS = 'alias=teamShotDetail'
+TEAM_PP_DATA = 'alias=teamPp'
+TEAM_PK_DATA = 'alias=teamPk'
 # strandard stuff for language, sorting and query definition 
 STANDARD_SORTING = '&orderBy=player&orderByDescending=false'
 STANDARD_INFO = '&skip=-1&language=de'
@@ -77,8 +110,11 @@ STUERMER = '/3'
 ALL_LICENCES = '/all'
 SWISS_LICENCE = '/1'
 FOREIGN_LICENCE = '/2'
+# sorting 
+SORT_BY_TEAM = '&orderBy=team&orderByDescending=false'
 # more standard stuff
 FILTERING_INFO = '&filterBy=Season,Phase,Team,Position,Licence'
+TEAM_STAT_FILTER_INFO = '&filterBy=Season,Phase'
 STANDARD_ENDING = "&take=1000&callback=externalStatisticsCallback"
 ##########################################################################
 # excel stuff
@@ -220,6 +256,7 @@ def get_the_data():
                + PHASE_REGULAR + ALL_TEAMS + ALL_POSITIONS + ALL_LICENCES + FILTERING_INFO 
                + STANDARD_SORTING + STANDARD_ENDING)
   goalie_shot_data = send_request(request_url)
+
   return general_data, goal_data, shot_data, faceoff_data, goalie_data, goalie_shot_data
 
 #
@@ -303,7 +340,6 @@ def create_team_data():
     scl_tigers_data = {}
     rapperswil_jona_lakers_data = {}
     zsc_lions_data = {}
-
     # the gathered data is a huge JSON which contains several dicts and lists. We actually 
     # do not care about the headers and dropdown options and therefore we directly go to the key 'data' which then is 
     # a list represented by i. each of them contains the statistic data of one player and yet another dict for the team info. 
@@ -3077,7 +3113,446 @@ def create_player_sheet(my_workbook: xlsxwriter.Workbook, my_worksheet: xlsxwrit
                                                          {'header': 'Penalty Minutes'}
                                                          ]})
     my_worksheet.autofit()
-# 
+def get_team_stats():
+     request_url = (BASE_URL + STAT_CACHE + TEAM_GOAL_OVERVIEW + QUARY_BASIC + CURRENT_SEASON + PHASE_REGULAR
+                  + SORT_BY_TEAM + STANDARD_ENDING) 
+     team_goal_data = send_request(request_url)
+
+     request_url = (BASE_URL + STAT_CACHE + TEAM_POSITION_GOALS + QUARY_BASIC + CURRENT_SEASON + PHASE_REGULAR
+                  + SORT_BY_TEAM + STANDARD_ENDING) 
+     team_positoin_goal_data = send_request(request_url)
+     request_url = (BASE_URL + STAT_CACHE + TEAM_SHOT_DETAILS + QUARY_BASIC + CURRENT_SEASON + PHASE_REGULAR
+                  + SORT_BY_TEAM + STANDARD_ENDING) 
+     team_shot_data = send_request(request_url)
+     request_url = (BASE_URL + STAT_CACHE + TEAM_PP_DATA + QUARY_BASIC + CURRENT_SEASON + PHASE_REGULAR
+                  + SORT_BY_TEAM + STANDARD_ENDING) 
+     team_pp_data = send_request(request_url)
+     request_url = (BASE_URL + STAT_CACHE + TEAM_PK_DATA + QUARY_BASIC + CURRENT_SEASON + PHASE_REGULAR
+                  + SORT_BY_TEAM + STANDARD_ENDING) 
+     team_pk_data = send_request(request_url)
+     return (team_goal_data, team_positoin_goal_data, team_shot_data, team_pp_data, team_pk_data)
+#
+#
+#
+def fill_team_data(my_workbook: xlsxwriter.Workbook, my_worksheet: xlsxwriter.worksheet, team_dict: dict) -> None:
+    # first we write the descriptions 
+    start_row = 0
+    start_column = 0
+    header_format = my_workbook.add_format({'bg_color': '#BFBFBF', 
+                                            'bold': True, 
+                                            'valign': 'center',
+                                            'align': 'center',
+                                            'align': 'vcenter',
+                                            'font_name': 'ADLaM Display',
+                                            })
+    
+    goal__title_format = my_workbook.add_format({'bg_color': '#B5E6A2', 
+                                                    'bold': True, 
+                                                    'valign': 'center',
+                                                    'align': 'center',
+                                                    'align': 'vcenter',
+                                                    'font_name': 'ADLaM Display',
+                                                    })
+    
+    goal_format = my_workbook.add_format({'bg_color': '#DAF2D0', 
+                                                    'bold': False, 
+                                                    'valign': 'left',
+                                                    'align': 'left',
+                                                    'font_name': 'Aptos Narrow',
+                                                    })
+    
+    shot_title_format = my_workbook.add_format({'bg_color': '#94DCF8', 
+                                              'bold': True, 
+                                              'valign': 'center',
+                                              'align': 'center',
+                                              'align': 'vcenter',
+                                              'font_name': 'ADLaM Display',
+                                              })
+    
+    shot_format = my_workbook.add_format({'bg_color': '#CAEDFB', 
+                                        'bold': False, 
+                                        'valign': 'left',
+                                        'align': 'left',
+                                        'font_name': 'Aptos Narrow',
+                                        })
+    
+    pp_title_format = my_workbook.add_format({'bg_color': '#A6C9EC', 
+                                              'bold': True, 
+                                              'valign': 'center',
+                                              'align': 'center',
+                                              'align': 'vcenter',
+                                              'font_name': 'ADLaM Display',
+                                              })
+    
+    pp_format = my_workbook.add_format({'bg_color': '#DAE9F8', 
+                                        'bold': False, 
+                                        'valign': 'left',
+                                        'align': 'left',
+                                        'font_name': 'Aptos Narrow',
+                                        })
+    
+    pk_title_format = my_workbook.add_format({'bg_color': '#A4ADEE', 
+                                              'bold': True, 
+                                              'valign': 'center',
+                                              'align': 'center',
+                                              'align': 'vcenter',
+                                              'font_name': 'ADLaM Display',
+                                              })
+    
+    pk_format = my_workbook.add_format({'bg_color': '#D5D9F7', 
+                                        'bold': False, 
+                                        'valign': 'left',
+                                        'align': 'left',
+                                        'font_name': 'Aptos Narrow',
+                                        })
+    # title row
+    my_worksheet.write(start_row, start_column, 'Was', header_format)
+    
+    # title of goal group
+    start_row +=1
+    my_worksheet.write(start_row, start_column, 'Tore', goal__title_format)
+    my_worksheet.set_row(start_row, 23.25)
+
+    # goal group descriptions
+    start_row += 1
+    my_worksheet.write(start_row, start_column, 'Gespielte Spiele', goal_format)
+    start_row += 1
+    my_worksheet.write(start_row, start_column, 'Total erhaltene Tore', goal_format)
+    start_row += 1
+    my_worksheet.write(start_row, start_column, 'Total erziehlte Tore', goal_format)
+    start_row += 1
+    my_worksheet.write(start_row, start_column, 'Tore erziehlt durch Verteidiger', goal_format)
+    start_row += 1
+    my_worksheet.write(start_row, start_column, 'Anteil an Toren Verteidiger %', goal_format)
+    start_row += 1
+    my_worksheet.write(start_row, start_column, 'Tore erziehlt durch Stürmer', goal_format)
+    start_row += 1
+    my_worksheet.write(start_row, start_column, 'Anteil an Toren Stürmer %', goal_format)
+    start_row += 1
+    my_worksheet.write(start_row, start_column, 'Tore erziehlt durch Imports', goal_format)
+    start_row += 1
+    my_worksheet.write(start_row, start_column, 'Anteil an Toren Imports %', goal_format)
+    start_row += 1
+    my_worksheet.write(start_row, start_column, 'Tore pro Verteidiger mit min 5 Spielen', goal_format)
+    start_row += 1
+    my_worksheet.write(start_row, start_column, 'Tore pro Stürmer mit min 5 Spielen', goal_format)
+    start_row += 1
+    my_worksheet.write(start_row, start_column, 'Tore pro Import mit min 5 Spielen', goal_format)
+    start_row += 1
+    my_worksheet.write(start_row, start_column, 'Tore pro Spiel', goal_format)
+    start_row += 1
+    my_worksheet.write(start_row, start_column, 'Erhaltene Tore pro Spiel', goal_format)
+
+    # title of shot group
+    start_row +=2
+    my_worksheet.write(start_row, start_column, 'Schüsse', shot_title_format)
+    my_worksheet.set_row(start_row, 23.25)
+    # shot group descriptions
+    start_row += 1
+    my_worksheet.write(start_row, start_column, 'Total Schüsse aufs Tor', shot_format)
+    start_row += 1
+    my_worksheet.write(start_row, start_column, 'Schüsse aufs Tor aus dem Slot', shot_format)
+    start_row += 1
+    my_worksheet.write(start_row, start_column, 'Schüsse an die Torumrandung', shot_format)
+    start_row += 1
+    my_worksheet.write(start_row, start_column, 'Schüsse neben das Tor', shot_format)
+    start_row += 1
+    my_worksheet.write(start_row, start_column, 'Geblockte Schüsse', shot_format)
+    start_row += 1
+    my_worksheet.write(start_row, start_column, 'Schüsse aufs Tor pro Spiel', shot_format)
+    start_row += 1
+    my_worksheet.write(start_row, start_column, 'Schüsse aufs Tor aus dem Slot pro Spiel', shot_format)
+    start_row += 1
+    my_worksheet.write(start_row, start_column, 'Schüsse and die Torumrandung pro Spiel', shot_format)
+    start_row += 1
+    my_worksheet.write(start_row, start_column, 'Schüsse neben das Tor pro Spiel', shot_format)
+    start_row += 1
+    my_worksheet.write(start_row, start_column, 'Schüsse Effizienz %', shot_format)
+    start_row += 1
+    my_worksheet.write(start_row, start_column, 'Geblockte Schüsse pro Spiel', shot_format)
+    start_row += 1
+    my_worksheet.write(start_row, start_column, 'Total erhaltene Schüsse aufs Tor', shot_format)
+    start_row += 1
+    my_worksheet.write(start_row, start_column, 'Erhaltene Schüsse aufs Tor aus dem Slot', shot_format)
+    start_row += 1
+    my_worksheet.write(start_row, start_column, 'Schusseffizienz der Gegner %', shot_format)
+    start_row += 1
+    my_worksheet.write(start_row, start_column, 'Erhaltene Schüsse aufs Tor pro Spiel', shot_format)
+    start_row += 1
+    my_worksheet.write(start_row, start_column, 'Erhaltene Schüsse aufs Tor aus dem Slot pro Spiel', shot_format)
+
+    # title of power play group
+    start_row +=2
+    my_worksheet.write(start_row, start_column, 'Powerplay', pp_title_format)
+    my_worksheet.set_row(start_row, 23.25)
+    # powerplay group descriptions
+    start_row += 1
+    my_worksheet.write(start_row, start_column, 'Powerplay Situationen', pp_format)
+    start_row += 1
+    my_worksheet.write(start_row, start_column, 'Minuten im Powerplay', pp_format)
+    start_row += 1
+    my_worksheet.write(start_row, start_column, 'Erziehlte Tore im Powerplay', pp_format)
+    start_row += 1
+    my_worksheet.write(start_row, start_column, 'Powerplay Situationen pro Spiel', pp_format)
+    start_row += 1
+    my_worksheet.write(start_row, start_column, 'Erziehlte Tore pro Powerplay', pp_format)
+    start_row += 1
+    my_worksheet.write(start_row, start_column, 'Durchnittliche Minuten im Powerplay bis zu einem Tor', pp_format)
+    start_row += 1
+    my_worksheet.write(start_row, start_column, 'Durchschnittliche Länge eines Powerplays', pp_format)
+    start_row += 1
+    my_worksheet.write(start_row, start_column, 'Powerplay Effizienz %', pp_format)
+    start_row += 1
+    my_worksheet.write(start_row, start_column, 'Erhaltene Tore im Powerplay', pp_format)
+    start_row += 1
+    my_worksheet.write(start_row, start_column, 'Erhaltene Tore pro Powerplay', pp_format)
+
+    # title of boxplay group
+    start_row +=2
+    my_worksheet.write(start_row, start_column, 'Boxplay', pk_title_format)
+    my_worksheet.set_row(start_row, 23.25)
+    # boxplay group descriptions
+    start_row += 1
+    my_worksheet.write(start_row, start_column, 'Boxplay Situationen', pk_format)
+    start_row += 1
+    my_worksheet.write(start_row, start_column, 'Minuten im Boxplay', pk_format)
+    start_row += 1
+    my_worksheet.write(start_row, start_column, 'Erhaltene Tore im Boxplay', pk_format)
+    start_row += 1
+    my_worksheet.write(start_row, start_column, 'Boxplay Situationen pro Spiel', pk_format)
+    start_row += 1
+    my_worksheet.write(start_row, start_column, 'Erhaltene Tore pro Boxplay', pk_format)
+    start_row += 1
+    my_worksheet.write(start_row, start_column, 'Minuten im Boxplay bis zu einem Tor', pk_format)
+    start_row += 1
+    my_worksheet.write(start_row, start_column, 'Durchnittliche Länge eines Boxplays', pk_format)
+    start_row += 1
+    my_worksheet.write(start_row, start_column, 'Boxplay Effizienz %', pk_format)
+    start_row += 1
+    my_worksheet.write(start_row, start_column, 'Erziehlte Tore im Boxplay', pk_format)
+    start_row += 1
+    my_worksheet.write(start_row, start_column, 'Erziehlte Tore pro Boxplay', pk_format)
+    my_worksheet.autofit()
+    # and now we have to fill the actuall data from the teams from the team dict
+    for i in team_dict:
+       start_column += 1
+       start_row = 0
+       # the title / team name
+       my_worksheet.write(start_row, start_column, team_dict[i].name, header_format)
+       # after some displays and some calculations i figured out that the cell_autofit_width
+       # works with a dict / map where the width for each character is hard coded since 
+       # true autofitting is acutally only possible in an excel runtime
+       # for the font size and font type I use, the calculated width was too small 
+       # and 1.34 will make the cells a bit too big (up to 2 pixels) but this is a compromise I
+       # am willing to accept 
+       max_width = round(cell_autofit_width(team_dict[i].name) * 1.34)
+       my_worksheet.set_column_pixels(start_column, start_column,max_width)
+       # the goal stats
+       start_row += 2
+       my_worksheet.write(start_row, start_column, team_dict[i].amount_of_games, goal_format)
+       start_row += 1
+       my_worksheet.write(start_row, start_column, team_dict[i].goals_against, goal_format)
+       start_row += 1
+       my_worksheet.write(start_row, start_column, team_dict[i].goals_made, goal_format)
+       start_row += 1
+       my_worksheet.write(start_row, start_column, team_dict[i].goals_made_defense, goal_format)
+       start_row += 1
+       temp = round(100/team_dict[i].goals_made * team_dict[i].goals_made_defense, 2)
+       my_worksheet.write(start_row, start_column, temp, goal_format)
+       start_row += 1
+       my_worksheet.write(start_row, start_column, team_dict[i].goals_made_forward, goal_format)
+       start_row += 1
+       temp = round(100/team_dict[i].goals_made * team_dict[i].goals_made_forward, 2)
+       my_worksheet.write(start_row, start_column, temp, goal_format)
+       start_row += 1
+       my_worksheet.write(start_row, start_column, team_dict[i].goals_made_imports, goal_format)
+       start_row += 1
+       temp = round(100/team_dict[i].goals_made * team_dict[i].goals_made_imports, 2)
+       my_worksheet.write(start_row, start_column, temp, goal_format)
+       start_row += 1
+       my_worksheet.write(start_row, start_column, 'Will come with the next release', goal_format)
+       start_row += 1
+       my_worksheet.write(start_row, start_column, 'Will come with the next release', goal_format)
+       start_row += 1
+       my_worksheet.write(start_row, start_column, 'Will come with the next release', goal_format)
+       start_row += 1
+       temp = round(team_dict[i].goals_made / team_dict[i].amount_of_games, 2)
+       my_worksheet.write(start_row, start_column, temp, goal_format)
+       start_row += 1
+       temp = round(team_dict[i].goals_against / team_dict[i].amount_of_games, 2)
+       my_worksheet.write(start_row, start_column, temp, goal_format)
+       # shot data
+       start_row += 3
+       my_worksheet.write(start_row, start_column, team_dict[i].sog, shot_format)
+       start_row += 1
+       my_worksheet.write(start_row, start_column, team_dict[i].sog_slot, shot_format)
+       start_row += 1
+       my_worksheet.write(start_row, start_column, team_dict[i].sob, shot_format)
+       start_row += 1
+       my_worksheet.write(start_row, start_column, team_dict[i].shots_missed, shot_format)
+       start_row += 1
+       my_worksheet.write(start_row, start_column, team_dict[i].blocked_shots, shot_format)
+       start_row += 1
+       temp = round(team_dict[i].sog / team_dict[i].amount_of_games, 2)
+       my_worksheet.write(start_row, start_column, temp, shot_format)
+       start_row += 1
+       temp = round(team_dict[i].sog_slot / team_dict[i].amount_of_games, 2)
+       my_worksheet.write(start_row, start_column, temp, shot_format)
+       start_row += 1
+       temp = round(team_dict[i].sob / team_dict[i].amount_of_games, 2)
+       my_worksheet.write(start_row, start_column, temp, shot_format)
+       start_row += 1
+       temp = round(team_dict[i].shots_missed / team_dict[i].amount_of_games, 2)
+       my_worksheet.write(start_row, start_column, temp, shot_format)
+       start_row += 1
+       temp = round(100/team_dict[i].sog * team_dict[i].goals_made, 2)
+       my_worksheet.write(start_row, start_column, temp, shot_format)
+       start_row += 1
+       temp = round(team_dict[i].blocked_shots / team_dict[i].amount_of_games, 2)
+       my_worksheet.write(start_row, start_column, temp, shot_format)
+       start_row += 1
+       my_worksheet.write(start_row, start_column, team_dict[i].sog_received, shot_format)
+       start_row += 1
+       my_worksheet.write(start_row, start_column, team_dict[i].sog_slot_received, shot_format)
+       start_row += 1
+       temp = round(100/team_dict[i].sog_received * team_dict[i].goals_against, 2)
+       my_worksheet.write(start_row, start_column, temp, shot_format)
+       start_row += 1
+       temp = round(team_dict[i].sog_received / team_dict[i].amount_of_games, 2)
+       my_worksheet.write(start_row, start_column, temp, shot_format)
+       start_row += 1
+       temp = round(team_dict[i].sog_slot_received / team_dict[i].amount_of_games, 2)
+       my_worksheet.write(start_row, start_column, temp, shot_format)
+       # powerplay stats
+       start_row += 3
+       my_worksheet.write(start_row, start_column, team_dict[i].pp_op, pp_format)
+       start_row += 1
+       my_worksheet.write(start_row, start_column, team_dict[i].time_in_pp, pp_format)
+       start_row += 1
+       my_worksheet.write(start_row, start_column, team_dict[i].pp_goals, pp_format)
+       start_row += 1
+       temp = round(team_dict[i].pp_op / team_dict[i].amount_of_games, 2)
+       my_worksheet.write(start_row, start_column, temp, pp_format)
+       start_row += 1
+       temp = round(team_dict[i].pp_goals / team_dict[i].pp_op, 2)
+       my_worksheet.write(start_row, start_column, temp, pp_format)
+       # apparently i can use split() to create a list form my string and I can even provide a Delimitter!
+       # so instead of INSPECT Var FOR CHARACTERS BEFORE INITIAL : TALLYING Counter
+       # I receive a List with 1 - n entries excluding the Delimitter 
+       # Example: 
+       # 1234:5678 -> ['1234', '5678']
+       temp_sec = 0
+       temp_time = team_dict[i].time_in_pp.split(':')
+      # convert minutes to seconds
+       temp_sec = int(temp_time[0]) * 60
+       # convert the seconds seperatly to an int to avoid the variable type of temp_sec
+       # to turn into a tuple 
+       temp_sec_bc_python_stopid = int(temp_time[1])
+       temp_sec += temp_sec_bc_python_stopid
+       temp_sec = temp_sec / team_dict[i].pp_goals
+       # we could also do that with the divmod() function, since // gives you the quotient
+       # and % the remainder
+       temp_len_min = temp_sec // 60
+       temp_len_sec = temp_sec % 60
+       # add the decimal positions of the minutes to the calculated seconds
+       temp_len_sec += temp_len_min % 1
+       # turn the results into integers to cut off anything which is beyond the decimal point
+       temp_len_min_rounded = int(temp_len_min)
+       temp_len_sec_roundded = int(temp_len_sec)
+       # create a string because i tried to do it first with join and there it needs a list as 
+       # input and xlsx is not capable to receive too much as the input 
+       temp_string_bc_xls_stopid = f"{temp_len_min_rounded:02}" + ':' + f"{temp_len_sec_roundded:02}"
+       start_row += 1
+       my_worksheet.write(start_row, start_column, temp_string_bc_xls_stopid, pp_format)
+
+       # convert minutes to seconds
+       temp_sec = int(temp_time[0]) * 60
+       # convert the seconds seperatly to an int to avoid the variable type of temp_sec
+       # to turn into a tuple 
+       temp_sec_bc_python_stopid = int(temp_time[1])
+       temp_sec += temp_sec_bc_python_stopid
+       temp_sec = temp_sec / team_dict[i].pp_op
+       # we could also do that with the divmod() function, since // gives you the quotient
+       # and % the remainder
+       temp_len_min = temp_sec // 60
+       temp_len_sec = temp_sec % 60
+       # add the decimal positions of the minutes to the calculated seconds
+       temp_len_sec += temp_len_min % 1
+       # turn the results into integers to cut off anything which is beyond the decimal point
+       temp_len_min_rounded = int(temp_len_min)
+       temp_len_sec_roundded = int(temp_len_sec)
+       # create a string because i tried to do it first with join and there it needs a list as 
+       # input and xlsx is not capable to receive too much as the input 
+       # with the f"{x:02} we force x to turn into a string with a certain format
+       temp_string_bc_xls_stopid = f"{temp_len_min_rounded:02}" + ':' + f"{temp_len_sec_roundded:02}"
+       start_row += 1
+       my_worksheet.write(start_row, start_column, temp_string_bc_xls_stopid, pp_format)
+       start_row += 1
+       temp = round(100 / team_dict[i].pp_op * team_dict[i].pp_goals, 2)
+       my_worksheet.write(start_row, start_column, temp, pp_format)
+       start_row += 1
+       my_worksheet.write(start_row, start_column, team_dict[i].pp_received_goals, pp_format)
+       start_row += 1
+       temp = round(team_dict[i].pp_received_goals / team_dict[i].pp_op, 2)
+       my_worksheet.write(start_row, start_column, temp, pp_format)
+       # and now the boxplay stats
+       start_row += 3
+       my_worksheet.write(start_row, start_column, team_dict[i].pk_situations, pk_format)
+       start_row += 1
+       my_worksheet.write(start_row, start_column, team_dict[i].time_in_pk, pk_format)
+       start_row += 1
+       my_worksheet.write(start_row, start_column, team_dict[i].pk_goals_received, pk_format)
+       start_row += 1
+       temp = round(team_dict[i].pk_situations / team_dict[i].amount_of_games, 2)
+       my_worksheet.write(start_row, start_column, temp, pk_format)
+       start_row += 1
+       temp = round(team_dict[i].pk_goals_received / team_dict[i].pk_situations, 2)
+       my_worksheet.write(start_row, start_column, temp, pk_format)
+       temp_sec = 0
+       temp_time = team_dict[i].time_in_pk.split(':')
+       temp_sec = int(temp_time[0]) * 60
+       temp_sec_bc_python_stopid = int(temp_time[1])
+       temp_sec += temp_sec_bc_python_stopid
+       temp_sec = temp_sec / team_dict[i].pk_goals_received
+       temp_len_min = temp_sec // 60
+       temp_len_sec = temp_sec % 60
+       temp_len_sec += temp_len_min % 1
+       temp_len_min_rounded = int(temp_len_min)
+       temp_len_sec_roundded = int(temp_len_sec)
+       temp_string_bc_xls_stopid = f"{temp_len_min_rounded:02}" + ':' + f"{temp_len_sec_roundded:02}"
+       start_row += 1
+       my_worksheet.write(start_row, start_column, temp_string_bc_xls_stopid, pk_format)
+       temp_sec = int(temp_time[0]) * 60
+       temp_sec_bc_python_stopid = int(temp_time[1])
+       temp_sec += temp_sec_bc_python_stopid
+       temp_sec = temp_sec / team_dict[i].pk_situations
+       temp_len_min = temp_sec // 60
+       temp_len_sec = temp_sec % 60
+       temp_len_sec += temp_len_min % 1
+       temp_len_min_rounded = int(temp_len_min)
+       temp_len_sec_roundded = int(temp_len_sec)
+       temp_string_bc_xls_stopid = f"{temp_len_min_rounded:02}" + ':' + f"{temp_len_sec_roundded:02}"
+       start_row += 1
+       my_worksheet.write(start_row, start_column, temp_string_bc_xls_stopid, pk_format)
+       start_row += 1
+       temp = round(100 / team_dict[i].pk_situations * team_dict[i].pk_goals_received, 2)
+       my_worksheet.write(start_row, start_column, temp, pk_format)
+       start_row += 1
+       my_worksheet.write(start_row, start_column, team_dict[i].shorthanders, pk_format)
+       start_row += 1
+       temp = round(team_dict[i].shorthanders / team_dict[i].pk_situations, 2)
+       my_worksheet.write(start_row, start_column, temp, pk_format)
+
+    # we still keep the autofit in order to get a nice fit for the first column 
+    # and the other ones are not getting overwritten 
+    my_worksheet.autofit()
+    # documentation states that it starts the index at 0 but for some reason 
+    # 1, 0 is required in order to fix the first row to the sheet
+    # maybe it is to ensure that no column gets fixed together 
+    # however, since it grew a bit I decided to fix column and row
+    my_worksheet.freeze_panes(1,1)
+    my_worksheet.set_row(0, 23.25)
+    
 # the actual main function
 #
 def main() -> None:
@@ -3159,5 +3634,55 @@ def main() -> None:
         # the function does not return anything but we need to hand over the home as well as the away team 
         # and since we have the ID as the key in the dictionary, it is quite easy to pass it over
         create_player_sheet(my_excelfile,my_worksheet,team_dict[i[4]['id']],team_dict[i[5]['id']])
+      
+    # create now the team stats
+    (team_goal_data, team_positoin_goal_data, team_shot_data
+   , team_pp_data, team_pk_data) = get_team_stats()
+
+    for i in (team_goal_data['data']):
+      if i[1]['id'] == 100000:
+         continue 
+      team_dict[i[1]['id']].amount_of_games = int(i[2])
+      team_dict[i[1]['id']].goals_made = int(i[3])
+      team_dict[i[1]['id']].goals_against = int(i[5])
+      team_dict[i[1]['id']].pp_goals = int(i[11])
+      team_dict[i[1]['id']].pp_received_goals = int(i[13])
+      team_dict[i[1]['id']].shorthanders = int(i[15])
+      team_dict[i[1]['id']].pk_goals_received = int(i[17])
+
+    for i in (team_positoin_goal_data['data']):
+      if i[1]['id'] == 100000:
+         continue
+      team_dict[i[1]['id']].goals_made_forward = int(i[4])
+      team_dict[i[1]['id']].goals_made_defense = int(i[6])
+      team_dict[i[1]['id']].goals_made_imports = int(i[8])
+    
+    for i in (team_shot_data['data']):
+      if i[1]['id'] == 100000:
+         continue 
+      team_dict[i[1]['id']].sog = int(i[3])
+      team_dict[i[1]['id']].sog_slot = int(i[6])
+      team_dict[i[1]['id']].shots_missed = int(i[8])
+      team_dict[i[1]['id']].sob = int(i[10])
+      team_dict[i[1]['id']].blocked_shots = int(i[12])
+      team_dict[i[1]['id']].sog_received = int(i[14])
+      team_dict[i[1]['id']].sog_slot_received = int(i[16])
+
+    for i in (team_pp_data['data']):
+      if i[1]['id'] == 100000:
+         continue 
+      team_dict[i[1]['id']].pp_op = int(i[3])
+      team_dict[i[1]['id']].time_in_pp = i[8]
+
+    for i in (team_pk_data['data']):
+      if i[1]['id'] == 100000:
+         continue 
+      team_dict[i[1]['id']].pk_situations = int(i[3])
+      team_dict[i[1]['id']].time_in_pk = i[8]
+
+    tab_name = 'Team Stats'  
+    team_tab = add_worksheet(my_excelfile, tab_name)
+    fill_team_data(my_excelfile, team_tab, team_dict) 
+
     my_excelfile.close()
 main()
