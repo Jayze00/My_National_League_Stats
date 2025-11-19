@@ -3634,7 +3634,9 @@ def main() -> None:
         # the function does not return anything but we need to hand over the home as well as the away team 
         # and since we have the ID as the key in the dictionary, it is quite easy to pass it over
         create_player_sheet(my_excelfile,my_worksheet,team_dict[i[4]['id']],team_dict[i[5]['id']])
-      
+    tabname = 'ZSC_EHCB Data for Leni'
+    my_worksheet = add_worksheet(my_excelfile, tabname)
+    create_player_sheet(my_excelfile,my_worksheet,zsc, biel)
     # create now the team stats
     (team_goal_data, team_positoin_goal_data, team_shot_data
    , team_pp_data, team_pk_data) = get_team_stats()
