@@ -505,6 +505,10 @@ def get_filter_options (league: str, season=' ') -> dict:
     Warnings
     --------
         If the provided season got changed to the current season
+    
+    See also
+    --------
+    swissicehockey_stats.send_request
 
     """
     # at first we are going to build a request URL which we then will send.
@@ -595,6 +599,7 @@ def get_summary_player_stats (filters: Player_filters) -> list:
    See also
    --------
    swissicehockey_stats.Player_filters
+   swissicehockey_stats.send_request
    https://m.sihf.ch/de/game-center/national-league/#/players/points/desc/page/0/
 
    """
@@ -653,6 +658,7 @@ def get_player_goal_stats (filters: Player_filters) -> list:
    See also
    --------
    swissicehockey_stats.Player_filters
+   swissicehockey_stats.send_request
    https://m.sihf.ch/de/game-center/national-league/#/mashup/players/playerGoalAssist/goals/desc/page/1/
 
    """
@@ -711,6 +717,7 @@ def get_player_shot_stats (filters: Player_filters) -> list:
    See also
    --------
    swissicehockey_stats.Player_filters
+   swissicehockey_stats.send_request
    https://m.sihf.ch/de/game-center/national-league/#/mashup/players/playerShotDetail/sogSog/desc/page/1/
 
    """
@@ -770,6 +777,7 @@ def get_player_penlaties_stats (filters: Player_filters) -> list:
    --------
    pim = penalty minutes
    swissicehockey_stats.Player_filters
+   swissicehockey_stats.send_request
    https://m.sihf.ch/de/game-center/national-league/#/mashup/players/playerFoul/pimTotal/desc/page/1/
 
    """
@@ -828,6 +836,7 @@ def get_player_shootout_stats (filters: Player_filters) -> list:
    See also
    --------
    swissicehockey_stats.Player_filters
+   swissicehockey_stats.send_request
    https://m.sihf.ch/de/game-center/national-league/#/mashup/players/playerShootout/penShots/desc/page/1/
 
    """
@@ -886,6 +895,7 @@ def get_player_faceoff_summary_stats (filters: Player_filters) -> list:
    See also
    --------
    swissicehockey_stats.Player_filters
+   swissicehockey_stats.send_request
    https://m.sihf.ch/de/game-center/national-league/#/mashup/players/playerFaceoff/faceoffs/desc/page/1/
 
    """
@@ -944,6 +954,7 @@ def get_player_faceoff_zone_stats (filters: Player_filters) -> list:
    See also
    --------
    swissicehockey_stats.Player_filters
+   swissicehockey_stats.send_request
    https://m.sihf.ch/de/game-center/national-league/#/mashup/players/playerFaceoffZone/faceoffsOffensive/desc/page/1/
 
    """
@@ -1002,6 +1013,7 @@ def get_player_faceoff_zone_pg_stats (filters: Player_filters) -> list:
    See also
    --------
    swissicehockey_stats.Player_filters
+   swissicehockey_stats.send_request
    https://m.sihf.ch/de/game-center/national-league/#/mashup/players/playerFaceoffZoneGame/faceoffsOffensivePerGame/desc/page/1/
 
    """
@@ -1061,6 +1073,7 @@ def get_player_time_on_ice_stats (filters: Player_filters) -> list:
    --------
    toi = time on ice
    swissicehockey_stats.Player_filters
+   swissicehockey_stats.send_request
    https://m.sihf.ch/de/game-center/national-league/#/mashup/players/playerTimeOnIce/timeOnIcePerGame/desc/page/1/
 
    """
@@ -1123,6 +1136,7 @@ def get_goalie_summary_stats (filters: Player_filters) -> list:
    See also
    --------
    swissicehockey_stats.Player_filters
+   swissicehockey_stats.send_request
    https://m.sihf.ch/de/game-center/national-league/#/goalkeepers/goalsAgainstAverage/asc/page/0/
 
    """
@@ -1180,6 +1194,7 @@ def get_goalie_shots_against_stats (filters: Player_filters) -> list:
    See also
    --------
    swissicehockey_stats.Player_filters
+   swissicehockey_stats.send_request
    https://m.sihf.ch/de/game-center/national-league/#/mashup/goalkeepers/goalkeeperShotDetail/sogaSog/desc/page/1/
 
    """
@@ -1237,6 +1252,7 @@ def get_goalie_win_stats (filters: Player_filters) -> list:
    See also
    --------
    swissicehockey_stats.Player_filters
+   swissicehockey_stats.send_request
    https://m.sihf.ch/de/game-center/national-league/#/mashup/goalkeepers/goalkeeperWin/wins/desc/page/1/
 
    """
@@ -1294,6 +1310,7 @@ def get_goalie_shootout_stats (filters: Player_filters) -> list:
    See also
    --------
    swissicehockey_stats.Player_filters
+   swissicehockey_stats.send_request
    https://m.sihf.ch/de/game-center/national-league/#/mashup/goalkeepers/goalkeeperShootout/penShotsAgainst/desc/page/1/
 
    """
@@ -1355,6 +1372,7 @@ def get_team_goal_summary_stats(filters: Player_filters) -> list:
    See also
    --------
    swissicehockey_stats.Player_filters
+   swissicehockey_stats.send_request
    https://m.sihf.ch/de/game-center/national-league/#/teams/goalsFor/desc/page/0/
 
    """
@@ -1404,6 +1422,7 @@ def get_team_goal_pos_stats(filters: Player_filters) -> list:
    See also
    --------
    swissicehockey_stats.Player_filters
+   swissicehockey_stats.send_request
    https://m.sihf.ch/de/game-center/national-league/#/mashup/teams/teamGoalPosNation/goalsForFw/desc/page/1/
 
    """
@@ -1454,6 +1473,7 @@ def get_team_shot_stats(filters: Player_filters) -> list:
    See also
    --------
    swissicehockey_stats.Player_filters
+   swissicehockey_stats.send_request
    https://m.sihf.ch/de/game-center/national-league/#/mashup/teams/teamShotDetail/sogSog/desc/page/1/
 
    """
@@ -1504,6 +1524,7 @@ def get_team_pp_stats(filters: Player_filters) -> list:
    --------
    PP = power play
    swissicehockey_stats.Player_filters
+   swissicehockey_stats.send_request
    https://m.sihf.ch/de/game-center/national-league/#/mashup/teams/teamPp/ppPercent/desc/page/1/
 
    """
@@ -1554,6 +1575,7 @@ def get_team_pk_stats(filters: Player_filters) -> list:
    --------
    PK = penalty killing = box play
    swissicehockey_stats.Player_filters
+   swissicehockey_stats.send_request
    https://m.sihf.ch/de/game-center/national-league/#/mashup/teams/teamPk/pkPercent/desc/page/1/
 
    """
@@ -1604,6 +1626,7 @@ def get_team_foul_stats(filters: Player_filters) -> list:
    --------
    foul = penalty
    swissicehockey_stats.Player_filters
+   swissicehockey_stats.send_request
    https://m.sihf.ch/de/game-center/national-league/#/mashup/teams/teamFoul/pimTotal/desc/page/1/
 
    """
@@ -1653,6 +1676,7 @@ def get_team_shootout_stats(filters: Player_filters) -> list:
    See also
    --------
    swissicehockey_stats.Player_filters
+   swissicehockey_stats.send_request
    https://m.sihf.ch/de/game-center/national-league/#/mashup/teams/teamShootout/penShotsPercent/desc/page/1/
 
    """
@@ -1702,6 +1726,7 @@ def get_team_faceoff_summary_stats(filters: Player_filters) -> list:
    See also
    --------
    swissicehockey_stats.Player_filters
+   swissicehockey_stats.send_request
    https://m.sihf.ch/de/game-center/national-league/#/mashup/teams/teamFaceoff/faceoffsPercent/desc/page/1/
 
    """
@@ -1751,6 +1776,7 @@ def get_team_faceoff_zone_per_game_stats(filters: Player_filters) -> list:
    See also
    --------
    swissicehockey_stats.Player_filters
+   swissicehockey_stats.send_request
    https://m.sihf.ch/de/game-center/national-league/#/mashup/teams/teamFaceoffZone/faceoffsOffensive/desc/page/1/
 
    """
@@ -1801,6 +1827,7 @@ def get_team_faceoff_zone_per_game_stats(filters: Player_filters) -> list:
    --------
    zpg = zone per game
    swissicehockey_stats.Player_filters
+   swissicehockey_stats.send_request
    https://m.sihf.ch/de/game-center/national-league/#/mashup/teams/teamFaceoffZoneGame/faceoffsOffensivePerGame/desc/page/1/
 
    """
@@ -1850,6 +1877,7 @@ def get_team_spectators_stats(filters: Player_filters) -> list:
    See also
    --------
    swissicehockey_stats.Player_filters
+   swissicehockey_stats.send_request
    https://m.sihf.ch/de/game-center/national-league/#/mashup/teams/teamSpectator/spectatorsQuotient/desc/page/1/
 
    """
@@ -1909,6 +1937,7 @@ def get_pf_top_scorer_data(filters: Player_filters) -> list:
    TS = top scorer
    NL = national league
    swissicehockey_stats.Player_filters
+   swissicehockey_stats.send_request
    https://m.sihf.ch/de/game-center/national-league/#/pftopscorer//asc/page/0/
 
    """
@@ -1973,6 +2002,7 @@ def get_todays_games (filters: Player_filters) -> list:
    --------
    swissicehockey_stats.Player_filters
    swissicehockey_stats.Planned_game
+   swissicehockey_stats.send_request
 
    """
    league_filter = '1,2,4,10//'
@@ -2033,6 +2063,7 @@ def get_next_games (filters: Player_filters) -> list:
    --------
    swissicehockey_stats.Player_filters
    swissicehockey_stats.Planned_game
+   swissicehockey_stats.send_request
 
    """
    league_filter = '1,2,4,10//'
@@ -2106,6 +2137,7 @@ def get_past_n_games_of_team(filters: Player_filters, amount_of_games=5) -> list
    swissicehockey_stats.Game_Detail
    swissicehockey_stats.get_game_plan_of_season
    swissicehockey_stats.get_game_detail
+   swissicehockey_stats.send_request
    datetime.datetime.now
    str.split
    datetime.date.strftime
@@ -2197,6 +2229,7 @@ def get_game_plan_of_season(season: str, league='1') -> list:
    See also
    --------
    swissicehockey_stats LEAGUES
+   swissicehockey_stats.send_request
 
    """
    # Input validation
@@ -2261,6 +2294,7 @@ def get_game_detail(game_id: str) -> Game_detail:
    --------
    swissicehockey_stats.Game_Detail
    swissicehockey_stats.Game_Detail.Team_game_detail
+   swissicehockey_stats.send_request
    numpy.array
    numpy.where
    str.split
