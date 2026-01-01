@@ -1068,6 +1068,38 @@ def get_player_time_on_ice_stats (filters: Player_filters) -> list:
 ###############################################################################
 
 def get_goalie_summary_stats (filters: Player_filters) -> list: 
+   """
+   Get the goalie summary stat using the provided filters.
+
+   The goalie summary stat is the exact same as if you click on goalie stats ->
+   summary on the SIHF web page.
+
+   Parameters
+   ----------
+      filters: Player_filters
+               A set of filters which can be passed / used to get the 
+               desired data.
+   Returns
+   -------
+      goalie_data: list of list of str or dict
+                   A list containing the statistic data where one entry 
+                   represents one player as a list which contains the actual 
+                   data or a dictionary in case of the team.
+                   The very last entry of the list currently still contains
+                   the headers for an easier implementation.
+   Raises
+   ------
+   Exception
+             If phase is not provided.
+   Exception
+             If season is not provided.
+   
+   See also
+   --------
+   swissicehockey_stats.Player_filters
+   https://m.sihf.ch/de/game-center/national-league/#/goalkeepers/goalsAgainstAverage/asc/page/0/
+
+   """
    # Input validation for the fields where no standard value is present
    if len(filters.phase) == 0: 
       raise Exception('Phase is mandatory for the goalie summary stat')
@@ -1093,6 +1125,38 @@ def get_goalie_summary_stats (filters: Player_filters) -> list:
    return goalie_data
 
 def get_goalie_shots_against_stats (filters: Player_filters) -> list: 
+   """
+   Get the goalie shots against stat using the provided filters.
+
+   The shots against stat is the exact same as if you click on goalie stats ->
+   shots on the SIHF web page.
+
+   Parameters
+   ----------
+      filters: Player_filters
+               A set of filters which can be passed / used to get the 
+               desired data.
+   Returns
+   -------
+      goalie_shot_data: list of list of str or dict
+                        A list containing the statistic data where one entry 
+                        represents one player as a list which contains the actual 
+                        data or a dictionary in case of the team.
+                        The very last entry of the list currently still contains
+                        the headers for an easier implementation.
+   Raises
+   ------
+   Exception
+             If phase is not provided.
+   Exception
+             If season is not provided.
+   
+   See also
+   --------
+   swissicehockey_stats.Player_filters
+   https://m.sihf.ch/de/game-center/national-league/#/mashup/goalkeepers/goalkeeperShotDetail/sogaSog/desc/page/1/
+
+   """
    # Input validation for the fields where no standard value is present
    if len(filters.phase) == 0: 
       raise Exception('Phase is mandatory for the goalie shots against stat')
@@ -1118,6 +1182,38 @@ def get_goalie_shots_against_stats (filters: Player_filters) -> list:
    return goalie_shot_data
 
 def get_goalie_win_stats (filters: Player_filters) -> list: 
+   """
+   Get the goalie win and shutout stat using the provided filters.
+
+   The win and shutout stat is the exact same as if you click on goalie stats ->
+   Wins/Shutouts on the SIHF web page.
+
+   Parameters
+   ----------
+      filters: Player_filters
+               A set of filters which can be passed / used to get the 
+               desired data.
+   Returns
+   -------
+      goalie_win_data: list of list of str or dict
+                       A list containing the statistic data where one entry 
+                       represents one player as a list which contains the actual 
+                       data or a dictionary in case of the team.
+                       The very last entry of the list currently still contains
+                       the headers for an easier implementation.
+   Raises
+   ------
+   Exception
+             If phase is not provided.
+   Exception
+             If season is not provided.
+   
+   See also
+   --------
+   swissicehockey_stats.Player_filters
+   https://m.sihf.ch/de/game-center/national-league/#/mashup/goalkeepers/goalkeeperWin/wins/desc/page/1/
+
+   """
    # Input validation for the fields where no standard value is present
    if len(filters.phase) == 0: 
       raise Exception('Phase is mandatory for the goalie win stat')
@@ -1143,6 +1239,38 @@ def get_goalie_win_stats (filters: Player_filters) -> list:
    return goalie_win_data
 
 def get_goalie_shootout_stats (filters: Player_filters) -> list: 
+   """
+   Get the goalie shootout stat using the provided filters.
+
+   The win and shutout stat is the exact same as if you click on goalie stats ->
+   Shootout on the SIHF web page.
+
+   Parameters
+   ----------
+      filters: Player_filters
+               A set of filters which can be passed / used to get the 
+               desired data.
+   Returns
+   -------
+      goalie_shootout_data: list of list of str or dict
+                            A list containing the statistic data where one entry 
+                            represents one player as a list which contains the actual 
+                            data or a dictionary in case of the team.
+                            The very last entry of the list currently still contains
+                            the headers for an easier implementation.
+   Raises
+   ------
+   Exception
+             If phase is not provided.
+   Exception
+             If season is not provided.
+   
+   See also
+   --------
+   swissicehockey_stats.Player_filters
+   https://m.sihf.ch/de/game-center/national-league/#/mashup/goalkeepers/goalkeeperShootout/penShotsAgainst/desc/page/1/
+
+   """
    # Input validation for the fields where no standard value is present
    if len(filters.phase) == 0: 
       raise Exception('Phase is mandatory for the goalie shootout stat')
@@ -1172,6 +1300,38 @@ def get_goalie_shootout_stats (filters: Player_filters) -> list:
 # Team stats 
 ###############################################################################
 def get_team_goal_summary_stats(filters: Player_filters) -> list:
+   """
+   Get the goal stats of teams using the provided filters.
+
+   The goal team stat is the exact same as if you click on Team stats ->
+   Goals on the SIHF web page.
+
+   Parameters
+   ----------
+      filters: Player_filters
+               A set of filters which can be passed / used to get the 
+               desired data.
+   Returns
+   -------
+      team_goal_summary_data: list of list of str or dict
+                              A list containing the statistic data where one entry 
+                              represents one player as a list which contains the actual 
+                              data or a dictionary in case of the team.
+                              The very last entry of the list currently still contains
+                              the headers for an easier implementation.
+   Raises
+   ------
+   Exception
+             If phase is not provided.
+   Exception
+             If season is not provided.
+   
+   See also
+   --------
+   swissicehockey_stats.Player_filters
+   https://m.sihf.ch/de/game-center/national-league/#/teams/goalsFor/desc/page/0/
+
+   """
    if len(filters.phase) == 0:
       raise Exception('Phase is mandatory for the team goal summary stat')
    
@@ -1189,6 +1349,38 @@ def get_team_goal_summary_stats(filters: Player_filters) -> list:
    return team_goal_summary_data
 
 def get_team_goal_pos_stats(filters: Player_filters) -> list:
+   """
+   Get the goal stats per position a/o nation of teams using the provided filters.
+
+   The goal per position a/o nation team stat is the exact same as if you click on Team stats ->
+   Goals Pos/Nation on the SIHF web page.
+
+   Parameters
+   ----------
+      filters: Player_filters
+               A set of filters which can be passed / used to get the 
+               desired data.
+   Returns
+   -------
+      team_goal_pos_data: list of list of str or dict
+                          A list containing the statistic data where one entry 
+                          represents one player as a list which contains the actual 
+                          data or a dictionary in case of the team.
+                          The very last entry of the list currently still contains
+                          the headers for an easier implementation.
+   Raises
+   ------
+   Exception
+             If phase is not provided.
+   Exception
+             If season is not provided.
+   
+   See also
+   --------
+   swissicehockey_stats.Player_filters
+   https://m.sihf.ch/de/game-center/national-league/#/mashup/teams/teamGoalPosNation/goalsForFw/desc/page/1/
+
+   """
    if len(filters.phase) == 0:
       raise Exception('Phase is mandatory for the team goal position and licence stat')
    
@@ -1207,6 +1399,38 @@ def get_team_goal_pos_stats(filters: Player_filters) -> list:
    return team_goal_pos_data
 
 def get_team_shot_stats(filters: Player_filters) -> list:
+   """
+   Get the shot stat of teams using the provided filters.
+
+   The shot team stat is the exact same as if you click on Team stats ->
+   Goals Pos/Nation on the SIHF web page.
+
+   Parameters
+   ----------
+      filters: Player_filters
+               A set of filters which can be passed / used to get the 
+               desired data.
+   Returns
+   -------
+      team_shot_data: list of list of str or dict
+                      A list containing the statistic data where one entry 
+                      represents one player as a list which contains the actual 
+                      data or a dictionary in case of the team.
+                      The very last entry of the list currently still contains
+                      the headers for an easier implementation.
+   Raises
+   ------
+   Exception
+             If phase is not provided.
+   Exception
+             If season is not provided.
+   
+   See also
+   --------
+   swissicehockey_stats.Player_filters
+   https://m.sihf.ch/de/game-center/national-league/#/mashup/teams/teamShotDetail/sogSog/desc/page/1/
+
+   """
    if len(filters.phase) == 0:
       raise Exception('Phase is mandatory for the team shot stat')
    
@@ -1224,6 +1448,39 @@ def get_team_shot_stats(filters: Player_filters) -> list:
    return team_shot_data
 
 def get_team_pp_stats(filters: Player_filters) -> list:
+   """
+   Get the power play stat of teams using the provided filters.
+
+   The power play team stat is the exact same as if you click on Team stats ->
+   PP on the SIHF web page.
+
+   Parameters
+   ----------
+      filters: Player_filters
+               A set of filters which can be passed / used to get the 
+               desired data.
+   Returns
+   -------
+      team_pp_data: list of list of str or dict
+                    A list containing the statistic data where one entry 
+                    represents one player as a list which contains the actual 
+                    data or a dictionary in case of the team.
+                    The very last entry of the list currently still contains
+                    the headers for an easier implementation.
+   Raises
+   ------
+   Exception
+             If phase is not provided.
+   Exception
+             If season is not provided.
+   
+   See also
+   --------
+   PP = power play
+   swissicehockey_stats.Player_filters
+   https://m.sihf.ch/de/game-center/national-league/#/mashup/teams/teamPp/ppPercent/desc/page/1/
+
+   """
    if len(filters.phase) == 0:
       raise Exception('Phase is mandatory for the team powerplay stat')
    
@@ -1241,6 +1498,39 @@ def get_team_pp_stats(filters: Player_filters) -> list:
    return team_pp_data
 
 def get_team_pk_stats(filters: Player_filters) -> list:
+   """
+   Get the box play stat of teams using the provided filters.
+
+   The box play team stat is the exact same as if you click on Team stats ->
+   PK on the SIHF web page.
+
+   Parameters
+   ----------
+      filters: Player_filters
+               A set of filters which can be passed / used to get the 
+               desired data.
+   Returns
+   -------
+      team_pk_data: list of list of str or dict
+                    A list containing the statistic data where one entry 
+                    represents one player as a list which contains the actual 
+                    data or a dictionary in case of the team.
+                    The very last entry of the list currently still contains
+                    the headers for an easier implementation.
+   Raises
+   ------
+   Exception
+             If phase is not provided.
+   Exception
+             If season is not provided.
+   
+   See also
+   --------
+   PK = penalty killing = box play
+   swissicehockey_stats.Player_filters
+   https://m.sihf.ch/de/game-center/national-league/#/mashup/teams/teamPk/pkPercent/desc/page/1/
+
+   """
    if len(filters.phase) == 0:
       raise Exception('Phase is mandatory for the team boxplay stat')
    
@@ -1258,6 +1548,39 @@ def get_team_pk_stats(filters: Player_filters) -> list:
    return team_pk_data
 
 def get_team_foul_stats(filters: Player_filters) -> list:
+   """
+   Get the penalty stat of teams using the provided filters.
+
+   The penalty team stat is the exact same as if you click on Team stats ->
+   Penalties on the SIHF web page.
+
+   Parameters
+   ----------
+      filters: Player_filters
+               A set of filters which can be passed / used to get the 
+               desired data.
+   Returns
+   -------
+      team_foul_data: list of list of str or dict
+                      A list containing the statistic data where one entry 
+                      represents one player as a list which contains the actual 
+                      data or a dictionary in case of the team.
+                      The very last entry of the list currently still contains
+                      the headers for an easier implementation.
+   Raises
+   ------
+   Exception
+             If phase is not provided.
+   Exception
+             If season is not provided.
+   
+   See also
+   --------
+   foul = penalty
+   swissicehockey_stats.Player_filters
+   https://m.sihf.ch/de/game-center/national-league/#/mashup/teams/teamFoul/pimTotal/desc/page/1/
+
+   """
    if len(filters.phase) == 0:
       raise Exception('Phase is mandatory for the team foul stat')
    
@@ -1275,6 +1598,38 @@ def get_team_foul_stats(filters: Player_filters) -> list:
    return team_foul_data
 
 def get_team_shootout_stats(filters: Player_filters) -> list:
+   """
+   Get the shootout stat of teams using the provided filters.
+
+   The shootout team stat is the exact same as if you click on Team stats ->
+   Shootouts on the SIHF web page.
+
+   Parameters
+   ----------
+      filters: Player_filters
+               A set of filters which can be passed / used to get the 
+               desired data.
+   Returns
+   -------
+      team_shootout_data: list of list of str or dict
+                          A list containing the statistic data where one entry 
+                          represents one player as a list which contains the actual 
+                          data or a dictionary in case of the team.
+                          The very last entry of the list currently still contains
+                          the headers for an easier implementation.
+   Raises
+   ------
+   Exception
+             If phase is not provided.
+   Exception
+             If season is not provided.
+   
+   See also
+   --------
+   swissicehockey_stats.Player_filters
+   https://m.sihf.ch/de/game-center/national-league/#/mashup/teams/teamShootout/penShotsPercent/desc/page/1/
+
+   """
    if len(filters.phase) == 0:
       raise Exception('Phase is mandatory for the team shootout stat')
    
@@ -1292,6 +1647,38 @@ def get_team_shootout_stats(filters: Player_filters) -> list:
    return team_shootout_data
 
 def get_team_faceoff_summary_stats(filters: Player_filters) -> list:
+   """
+   Get the faceoff summary stat of teams using the provided filters.
+
+   The faceoff summary team stat is the exact same as if you click on Team stats ->
+   Faceoffs Summary on the SIHF web page.
+
+   Parameters
+   ----------
+      filters: Player_filters
+               A set of filters which can be passed / used to get the 
+               desired data.
+   Returns
+   -------
+      team_faceoff_summary_data: list of list of str or dict
+                                 A list containing the statistic data where one entry 
+                                 represents one player as a list which contains the actual 
+                                 data or a dictionary in case of the team.
+                                 The very last entry of the list currently still contains
+                                 the headers for an easier implementation.
+   Raises
+   ------
+   Exception
+             If phase is not provided.
+   Exception
+             If season is not provided.
+   
+   See also
+   --------
+   swissicehockey_stats.Player_filters
+   https://m.sihf.ch/de/game-center/national-league/#/mashup/teams/teamFaceoff/faceoffsPercent/desc/page/1/
+
+   """
    if len(filters.phase) == 0:
       raise Exception('Phase is mandatory for the team faceoff summary stat')
    
@@ -1309,6 +1696,38 @@ def get_team_faceoff_summary_stats(filters: Player_filters) -> list:
    return team_faceoff_summary_data
 
 def get_team_faceoff_zone_per_game_stats(filters: Player_filters) -> list:
+   """
+   Get the faceoffs per zone stat of teams using the provided filters.
+
+   The faceoffs per zone team stat is the exact same as if you click on Team stats ->
+   Faceoffs/Zone on the SIHF web page.
+
+   Parameters
+   ----------
+      filters: Player_filters
+               A set of filters which can be passed / used to get the 
+               desired data.
+   Returns
+   -------
+      team_faceoff_zone_data: list of list of str or dict
+                              A list containing the statistic data where one entry 
+                              represents one player as a list which contains the actual 
+                              data or a dictionary in case of the team.
+                              The very last entry of the list currently still contains
+                              the headers for an easier implementation.
+   Raises
+   ------
+   Exception
+             If phase is not provided.
+   Exception
+             If season is not provided.
+   
+   See also
+   --------
+   swissicehockey_stats.Player_filters
+   https://m.sihf.ch/de/game-center/national-league/#/mashup/teams/teamFaceoffZone/faceoffsOffensive/desc/page/1/
+
+   """
    if len(filters.phase) == 0:
       raise Exception('Phase is mandatory for the team faceoff zone stat')
    
@@ -1326,6 +1745,39 @@ def get_team_faceoff_zone_per_game_stats(filters: Player_filters) -> list:
    return team_faceoff_zone_data
 
 def get_team_faceoff_zone_per_game_stats(filters: Player_filters) -> list:
+   """
+   Get the faceoffs per zone per game stat of teams using the provided filters.
+
+   The faceoffs per zone per game team stat is the exact same as if you click on Team stats ->
+   Faceoffs/Spiel on the SIHF web page.
+
+   Parameters
+   ----------
+      filters: Player_filters
+               A set of filters which can be passed / used to get the 
+               desired data.
+   Returns
+   -------
+      team_faceoff_zpg_data: list of list of str or dict
+                             A list containing the statistic data where one entry 
+                             represents one player as a list which contains the actual 
+                             data or a dictionary in case of the team.
+                             The very last entry of the list currently still contains
+                             the headers for an easier implementation.
+   Raises
+   ------
+   Exception
+             If phase is not provided.
+   Exception
+             If season is not provided.
+   
+   See also
+   --------
+   zpg = zone per game
+   swissicehockey_stats.Player_filters
+   https://m.sihf.ch/de/game-center/national-league/#/mashup/teams/teamFaceoffZoneGame/faceoffsOffensivePerGame/desc/page/1/
+
+   """
    if len(filters.phase) == 0:
       raise Exception('Phase is mandatory for the team faceoff zone per game stat')
    
@@ -1343,6 +1795,38 @@ def get_team_faceoff_zone_per_game_stats(filters: Player_filters) -> list:
    return team_faceoff_zpg_data
 
 def get_team_spectators_stats(filters: Player_filters) -> list:
+   """
+   Get attendance stat of teams using the provided filters.
+
+   The attendance team stat is the exact same as if you click on Team stats ->
+   Goals Attendance on the SIHF web page.
+
+   Parameters
+   ----------
+      filters: Player_filters
+               A set of filters which can be passed / used to get the 
+               desired data.
+   Returns
+   -------
+      team_attendance_data: list of list of str or dict
+                            A list containing the statistic data where one entry 
+                            represents one player as a list which contains the actual 
+                            data or a dictionary in case of the team.
+                            The very last entry of the list currently still contains
+                            the headers for an easier implementation.
+   Raises
+   ------
+   Exception
+             If phase is not provided.
+   Exception
+             If season is not provided.
+   
+   See also
+   --------
+   swissicehockey_stats.Player_filters
+   https://m.sihf.ch/de/game-center/national-league/#/mashup/teams/teamSpectator/spectatorsQuotient/desc/page/1/
+
+   """
    if len(filters.phase) == 0:
       raise Exception('Phase is mandatory for the team attendance stat')
    
@@ -1358,10 +1842,50 @@ def get_team_spectators_stats(filters: Player_filters) -> list:
    team_attendance_data = raw_data['data']
    team_attendance_data.append(raw_data['header'])
    return team_attendance_data
+
 ###############################################################################
 # Top Scorer Data
 ###############################################################################
+
 def get_pf_top_scorer_data(filters: Player_filters) -> list:
+   """
+   Get top scorer data of a league using the provided filters.
+
+   The top scorer data is the exact same as if you click on PostFinance TS 
+   on the SIHF web page.
+
+   Parameters
+   ----------
+      filters: Player_filters
+               A set of filters which can be passed / used to get the 
+               desired data.
+   Returns
+   -------
+      top_scorer_data: list of list of str or dict
+                       A list containing the statistic data where one entry 
+                       represents one player as a list which contains the actual 
+                       data or a dictionary in case of the team.
+                       The very last entry of the list currently still contains
+                       the headers for an easier implementation.
+   Warns
+   ------
+   If the league gets set to the national league
+   If the season gets set to the current season
+   
+   Notes
+   -----
+   Not all leagues in Switzerland have a top scorer sponsopring. National League, 
+   Swiss League, My Hockey League and the Post Finance Women's League have one as
+   of 01.01.2026
+
+   See also
+   --------
+   TS = top scorer
+   NL = national league
+   swissicehockey_stats.Player_filters
+   https://m.sihf.ch/de/game-center/national-league/#/pftopscorer//asc/page/0/
+
+   """
    league_filter = '1//'
 
    if len(filters.league) == 0: 
@@ -1393,8 +1917,38 @@ def get_pf_top_scorer_data(filters: Player_filters) -> list:
 ###############################################################################
 # Game Data
 ###############################################################################
-# get todays games
+
 def get_todays_games (filters: Player_filters) -> list:
+   """
+   Get todays games of a league.
+
+   Get the games which are planned for today using the provided league.
+
+   Parameters
+   ----------
+      filters: Player_filters
+               A set of filters which can be passed / used to get the 
+               desired data.
+   Returns
+   -------
+      todays_games: list of Planned_game
+                    A list containing 0..n elements of the type 
+                    Planned_game, which contains league, date, time,
+                    home team and away team
+   Warns
+   ------
+   If the league gets set to the national league
+   
+   Notes
+   -----
+   If no games are planned for today, the list returned will be empty
+
+   See also
+   --------
+   swissicehockey_stats.Player_filters
+   swissicehockey_stats.Planned_game
+
+   """
    league_filter = '1,2,4,10//'
  
    if len(filters.league) == 0: 
@@ -1423,8 +1977,38 @@ def get_todays_games (filters: Player_filters) -> list:
 
    return todays_games
 
-# get next round games 
 def get_next_games (filters: Player_filters) -> list:
+   """
+   Get the games of the next round of a league.
+
+   Get the next games which are planned using the provided league.
+
+   Parameters
+   ----------
+      filters: Player_filters
+               A set of filters which can be passed / used to get the 
+               desired data.
+   Returns
+   -------
+      next_games: list of Planned_game
+                  A list containing 0..n elements of the type 
+                  Planned_game, which contains league, date, time,
+                  home team and away team
+   Warns
+   ------
+   If the league gets set to the national league
+   
+   Notes
+   -----
+   The games returned in this list belong into the same round, meaning it can be
+   that they have different dates when they take place
+
+   See also
+   --------
+   swissicehockey_stats.Player_filters
+   swissicehockey_stats.Planned_game
+
+   """
    league_filter = '1,2,4,10//'
 
    if len(filters.league) == 0: 
@@ -1446,18 +2030,76 @@ def get_next_games (filters: Player_filters) -> list:
 
    return next_games
 
-def get_past_n_games_of_team(filters: Player_filters, amount_of_games: int) -> list:
+def get_past_n_games_of_team(filters: Player_filters, amount_of_games=5) -> list:
+   """
+   Gets the past n games of a team and returns them including team stats per game.
+
+   Returns the past games based on the provided filters and the desired amount. 
+   To get really all games, the whole game plan of the desired league gets loaded to 
+   check the first and the last game of the season. The first game is used as start date
+   for the game filtering and if the season is not the current season, the last game gets used
+   as end date, else the current date is taken. The fetched gameID is then used to load the 
+   details of a game, including the team stats.
+
+   Parameters
+   ----------
+      filters: Player_filters
+               A set of filters which can be passed / used to get the 
+               desired data.
+
+      amount_of_games: int, default=5
+                       A counter containing the amount of games to be returned with 
+                       default 5. If the counter is passed with the value 0, it gets 
+                       set to 5 as well.
+
+   Returns
+   -------
+      past_games: list of Game_Detail
+                  A list containing 0..n elements of the type 
+                  Game_Detail, which contains the base date of a game and team specific 
+                  statistic data over the whole game
+
+   Raises
+   ------
+   Exception
+             If no team was provided.
+
+   Warns
+   ------
+   If the amount of games gets set to 5.
+   If the Season gets set to the current season.
+   If the league gets set to the national league.
+   
+   Notes
+   -----
+   If no phase gets prvided, it gets set to all.
+
+   See also
+   --------
+   swissicehockey_stats.Player_filters
+   swissicehockey_stats.Game_Detail
+   swissicehockey_stats.get_game_plan_of_season
+   swissicehockey_stats.get_game_detail
+   datetime.datetime.now
+   str.split
+   datetime.date.strftime
+
+   """
    if len(filters.team) == 0: 
      raise Exception('No team was provided to search for!')
+   
    if amount_of_games == 0:
      warnings.warn('No amount of games to retrive was provied, assume default value of 5')
      amount_of_games = 5
+
    league_filter = '1,10//'
+
    if len(filters.season) == 0:
       warnings.warn('No season provided, data returned will be of current season')
       used_season = get_current_season()
    else: 
       used_season = filters.season
+
    if len(filters.league) == 0: 
       warnings.warn('data of the NL will be returned, since no league was provided')
       league_filter = league_filter + '1'
@@ -1465,16 +2107,20 @@ def get_past_n_games_of_team(filters: Player_filters, amount_of_games: int) -> l
    else:
       league_filter = league_filter + filters.league
       used_league = filters.league
+
    if len(filters.phase) == 0: 
       used_phase = 'all'
    else:
       used_phase = filters.phase
+
    daterange= ''
    dates = get_game_plan_of_season(used_season, used_league)
+
    if int(used_season) >  int((str(datetime.datetime.now()).split('-'))[0]):
       daterange = str(dates[0]) + '-' + datetime.datetime.now().strftime("%d.%m.%Y")
    else:
       daterange = str(dates[0]) + '-' + str(dates[1])
+
    request_url = (BASE_URL + STAT_CACHE + RESULTS + SEARCHQUERY + league_filter 
                 + FILTERQUERY + used_season + '/' + used_phase + '/' + daterange 
                 + '/all/' + filters.team + '/all' + FILTERBY + PAST_GAMES_FILTER_NAMES 
@@ -1483,48 +2129,70 @@ def get_past_n_games_of_team(filters: Player_filters, amount_of_games: int) -> l
    raw_data = send_request(request_url)
    past_games_data = raw_data['data']
    past_games = []
+
    for i in past_games_data:
       game = get_game_detail(i[9]['gameId'])
       past_games.append(game)
+
    return past_games
 
-def get_game_plan_of_season(season: str, league: str) -> list:
+def get_game_plan_of_season(season: str, league='1') -> list:
    """
-   Helper mehtod which gets the whole game plan of a season of a league, takes the first and the last
+   Helper function which gets the whole game plan of a season of a league, takes the first and the last
    games of the list, gets their dates in DD.MM.YYYY format and adds them into a list
 
    Parameters
    ----------
-   season (str): A 4 character represenation of the season (in SIHF format) which is always the 
-                 year, when the play offs take place (e.g season 2025 took place from 
-                 17.09.2024 - 24.04.2025)
-   league (str): A one - three character string of numbers representing the league, as defined
-                 in LEAGUES constant
+   season: str
+           A 4 character represenation of the season (in SIHF format) which is always the 
+           year, when the play offs take place (e.g season 2025 took place from 
+           17.09.2024 - 24.04.2025)
+   league: str, default=1 
+           A one - three character string of numbers representing the league, as defined
+           in LEAGUES constant
 
-   Return
-   ------ 
-   dates_of_season (list): A list, where the first entry represents the start of the season
-                           provided and the second (and last) entry represents the last game 
-                           of the season. The list element is a string containing a date in the
-                           format DD.MM.YYYY
+   Returns
+   ------- 
+   dates_of_season: list of str
+                    A list, where the first entry represents the start of the season
+                    provided and the second (and last) entry represents the last game 
+                    of the season. The list element is a string containing a date in the
+                    format DD.MM.YYYY
+
+   Raises
+   ------
+   Exception
+             If no season gets provided
+   
+   Warns
+   -----
+   If the league gets set to National League
+
+   See also
+   --------
+   swissicehockey_stats LEAGUES
 
    """
    # Input validation
    # season is mandatory (only because it is an internal method)
    if len(season) == 0: 
      raise Exception('No Season was provided!')
+   
    league_filter = '1,10//'
+
    if len(league) == 0: 
       warnings.warn('data of the NL will be returned, since no league was provided')
       league_filter = league_filter + '1'
    else:
       league_filter = league_filter + league
+
    request_url = (BASE_URL + STAT_CACHE + RESULTS + SEARCHQUERY + league_filter 
                  + FILTERQUERY + season + '/all/all/all/all' + FILTERBY + PAST_GAMES_FILTER_NAMES
                  + ORDERBY + ORDER_DATE + ORDER_ASC +  RECORDS_TO_BE_RETURNED + '999' + STANDARD_ENDING)
    raw_data = send_request(request_url)
    games_played = raw_data['data']
    dates_of_season = []
+
    dates_of_season.append(games_played[0][1])
    # dear COBOL 85, you could have done it like that (yes I agree that going backwards
    # in the memory where all of a sudden you ended in the AGRs of the calling program was not the 
@@ -1533,8 +2201,48 @@ def get_game_plan_of_season(season: str, league: str) -> list:
    return dates_of_season
 
 def get_game_detail(game_id: str) -> Game_detail:
+   """
+   Gets the details for a requested game.
+
+   Returns the details of the provided game as Game_detail, including the team stats of that game.
+
+   Parameters
+   ----------
+      game_id: str
+               A string representing the official SIHF GameID, typically containing the season. This 
+               attribute is used for the communication with the API.
+
+   Returns
+   -------
+      game_detail: Game_detail
+                   An object containing the Date, home team and away team and the league
+                   of a game. The teams are objects containing statistical data of them
+                   of that game.
+
+   Raises
+   ------
+   Exception
+             If no game id is provided.
+             
+   Notes
+   -----
+   The stats taken are over the whole game and not per period (could be done but for now not forseen).
+   Also player stats are not taken over currently, including absent players.
+   Since not all leagues do fill the team statistics data, we pack it in try except and do nothing
+   in case of the stat not beeing there
+
+   See also
+   --------
+   swissicehockey_stats.Game_Detail
+   swissicehockey_stats.Game_Detail.Team_game_detail
+   numpy.array
+   numpy.where
+   str.split
+
+   """
    if len(game_id) == 0:
       raise Exception('No game ID was provided!')
+   
    request_url = (GAME_URL + GAME_DETAIL + SEARCHQUERY + game_id + STANDARD_ENDING)
    raw_data = send_request(request_url)
    # do not ask why this works, but here we go, get the team stat detail of a game without header
@@ -1566,80 +2274,138 @@ def get_game_detail(game_id: str) -> Game_detail:
    # I am quite sure that this could be done in a smoother way but this is
    # already kinda cool
    list_pos_dyn = 0
-   list_pos_dyn = int(((np.where(game_data_array == 'SOG Total'))[0])[0])
-   game_detail.home_team.sog               = game_data[list_pos_dyn][1]
-   game_detail.away_team.sog               = game_data[list_pos_dyn][2]
+   try:
+      list_pos_dyn = int(((np.where(game_data_array == 'SOG Total'))[0])[0])
+      game_detail.home_team.sog               = game_data[list_pos_dyn][1]
+      game_detail.away_team.sog               = game_data[list_pos_dyn][2]
+   except:
+      pass
    list_pos_dyn = 0
-   list_pos_dyn = int(((np.where(game_data_array == 'SHM Total'))[0])[0])
-   game_detail.home_team.shots_missed      = game_data[list_pos_dyn][1]
-   game_detail.away_team.shots_missed      = game_data[list_pos_dyn][2]
+   try:
+      list_pos_dyn = int(((np.where(game_data_array == 'SHM Total'))[0])[0])
+      game_detail.home_team.shots_missed      = game_data[list_pos_dyn][1]
+      game_detail.away_team.shots_missed      = game_data[list_pos_dyn][2]
+   except:
+      pass
    list_pos_dyn = 0
-   list_pos_dyn = int(((np.where(game_data_array == 'SHP Total'))[0])[0])
-   game_detail.home_team.sob               = game_data[list_pos_dyn][1]
-   game_detail.away_team.sob               = game_data[list_pos_dyn][2]
+   try:
+      list_pos_dyn = int(((np.where(game_data_array == 'SHP Total'))[0])[0])
+      game_detail.home_team.sob               = game_data[list_pos_dyn][1]
+      game_detail.away_team.sob               = game_data[list_pos_dyn][2]
+   except:
+      pass
    list_pos_dyn = 0
-   list_pos_dyn = int(((np.where(game_data_array == 'BkS'))[0])[0])
-   game_detail.home_team.blocked_shots     = game_data[list_pos_dyn][1]
-   game_detail.away_team.blocked_shots     = game_data[list_pos_dyn][2]
+   try:
+      list_pos_dyn = int(((np.where(game_data_array == 'BkS'))[0])[0])
+      game_detail.home_team.blocked_shots     = game_data[list_pos_dyn][1]
+      game_detail.away_team.blocked_shots     = game_data[list_pos_dyn][2]
+   except:
+      pass
    list_pos_dyn = 0
-   list_pos_dyn = int(((np.where(game_data_array == 'FOW Total'))[0])[0])
-   game_detail.home_team.fo_won            = game_data[list_pos_dyn][1]
-   game_detail.away_team.fo_won            = game_data[list_pos_dyn][2]
+   try:
+      list_pos_dyn = int(((np.where(game_data_array == 'FOW Total'))[0])[0])
+      game_detail.home_team.fo_won            = game_data[list_pos_dyn][1]
+      game_detail.away_team.fo_won            = game_data[list_pos_dyn][2]
+   except:
+      pass
    list_pos_dyn = 0
-   list_pos_dyn = int(((np.where(game_data_array == 'FOL Total'))[0])[0])
-   game_detail.home_team.fo_lost           = game_data[list_pos_dyn][1]
-   game_detail.away_team.fo_lost           = game_data[list_pos_dyn][2]
+   try:
+      list_pos_dyn = int(((np.where(game_data_array == 'FOL Total'))[0])[0])
+      game_detail.home_team.fo_lost           = game_data[list_pos_dyn][1]
+      game_detail.away_team.fo_lost           = game_data[list_pos_dyn][2]
+   except:
+      pass
    list_pos_dyn = 0
-   list_pos_dyn = int(((np.where(game_data_array == 'FO Total'))[0])[0])
-   game_detail.home_team.fo_tot            = game_data[list_pos_dyn][1]
-   game_detail.away_team.fo_tot            = game_data[list_pos_dyn][2]
+   try:
+      list_pos_dyn = int(((np.where(game_data_array == 'FO Total'))[0])[0])
+      game_detail.home_team.fo_tot            = game_data[list_pos_dyn][1]
+      game_detail.away_team.fo_tot            = game_data[list_pos_dyn][2]
+   except:
+      pass
    list_pos_dyn = 0
-   list_pos_dyn = int(((np.where(game_data_array == 'FO% oz Total'))[0])[0])
-   game_detail.home_team.fo_oz_won_rate    = game_data[list_pos_dyn][1]
-   game_detail.away_team.fo_oz_won_rate    = game_data[list_pos_dyn][2]
+   try:
+      list_pos_dyn = int(((np.where(game_data_array == 'FO% oz Total'))[0])[0])
+      game_detail.home_team.fo_oz_won_rate    = game_data[list_pos_dyn][1]
+      game_detail.away_team.fo_oz_won_rate    = game_data[list_pos_dyn][2]
+   except:
+      pass
    list_pos_dyn = 0
-   list_pos_dyn = int(((np.where(game_data_array == 'FO% nz Total'))[0])[0])
-   game_detail.home_team.fo_nz_won_rate    = game_data[list_pos_dyn][1]
-   game_detail.away_team.fo_nz_won_rate    = game_data[list_pos_dyn][2]
+   try:
+      list_pos_dyn = int(((np.where(game_data_array == 'FO% nz Total'))[0])[0])
+      game_detail.home_team.fo_nz_won_rate    = game_data[list_pos_dyn][1]
+      game_detail.away_team.fo_nz_won_rate    = game_data[list_pos_dyn][2]
+   except:
+      pass
    list_pos_dyn = 0
-   list_pos_dyn = int(((np.where(game_data_array == 'FO% dz Total'))[0])[0])
-   game_detail.home_team.fo_dz_won_rate    = game_data[list_pos_dyn][1]
-   game_detail.away_team.fo_dz_won_rate    = game_data[list_pos_dyn][2]
+   try:
+      list_pos_dyn = int(((np.where(game_data_array == 'FO% dz Total'))[0])[0])
+      game_detail.home_team.fo_dz_won_rate    = game_data[list_pos_dyn][1]
+      game_detail.away_team.fo_dz_won_rate    = game_data[list_pos_dyn][2]
+   except:
+      pass
    list_pos_dyn = 0
-   list_pos_dyn = int(((np.where(game_data_array == 'PPT'))[0])[0])
-   game_detail.home_team.pp_time           = game_data[list_pos_dyn][1]
-   game_detail.away_team.pp_time           = game_data[list_pos_dyn][2]
+   try:
+      list_pos_dyn = int(((np.where(game_data_array == 'PPT'))[0])[0])
+      game_detail.home_team.pp_time           = game_data[list_pos_dyn][1]
+      game_detail.away_team.pp_time           = game_data[list_pos_dyn][2]
+   except:
+      pass
    list_pos_dyn = 0
-   list_pos_dyn = int(((np.where(game_data_array == 'PKT'))[0])[0])
-   game_detail.home_team.pk_time           = game_data[list_pos_dyn][1]
-   game_detail.away_team.pk_time           = game_data[list_pos_dyn][2]
+   try:
+      list_pos_dyn = int(((np.where(game_data_array == 'PKT'))[0])[0])
+      game_detail.home_team.pk_time           = game_data[list_pos_dyn][1]
+      game_detail.away_team.pk_time           = game_data[list_pos_dyn][2]
+   except:
+      pass
    list_pos_dyn = 0
-   list_pos_dyn = int(((np.where(game_data_array == 'PP OP'))[0])[0])
-   game_detail.home_team.pp_ops            = game_data[list_pos_dyn][1]
-   game_detail.away_team.pp_ops            = game_data[list_pos_dyn][2]
+   try:
+      list_pos_dyn = int(((np.where(game_data_array == 'PP OP'))[0])[0])
+      game_detail.home_team.pp_ops            = game_data[list_pos_dyn][1]
+      game_detail.away_team.pp_ops            = game_data[list_pos_dyn][2]
+   except:
+      pass
    list_pos_dyn = 0
-   list_pos_dyn = int(((np.where(game_data_array == 'PK SI'))[0])[0])
-   game_detail.home_team.pk_sit            = game_data[list_pos_dyn][1]
-   game_detail.away_team.pk_sit            = game_data[list_pos_dyn][2]
+   try:
+      list_pos_dyn = int(((np.where(game_data_array == 'PK SI'))[0])[0])
+      game_detail.home_team.pk_sit            = game_data[list_pos_dyn][1]
+      game_detail.away_team.pk_sit            = game_data[list_pos_dyn][2]
+   except:
+      pass
    list_pos_dyn = 0
-   list_pos_dyn = int(((np.where(game_data_array == 'PPG'))[0])[0])
-   game_detail.home_team.pp_goals          = game_data[list_pos_dyn][1]
-   game_detail.away_team.pp_goals          = game_data[list_pos_dyn][2]
+   try:
+      list_pos_dyn = int(((np.where(game_data_array == 'PPG'))[0])[0])
+      game_detail.home_team.pp_goals          = game_data[list_pos_dyn][1]
+      game_detail.away_team.pp_goals          = game_data[list_pos_dyn][2]
+   except:
+      pass
    list_pos_dyn = 0
-   list_pos_dyn = int(((np.where(game_data_array == 'SHG'))[0])[0])
-   game_detail.home_team.pk_goals          = game_data[list_pos_dyn][1]
-   game_detail.away_team.pk_goals          = game_data[list_pos_dyn][2]
+   try:
+      list_pos_dyn = int(((np.where(game_data_array == 'SHG'))[0])[0])
+      game_detail.home_team.pk_goals          = game_data[list_pos_dyn][1]
+      game_detail.away_team.pk_goals          = game_data[list_pos_dyn][2]
+   except:
+      pass
    list_pos_dyn = 0
-   list_pos_dyn = int(((np.where(game_data_array == 'PP GA'))[0])[0])
-   game_detail.home_team.pp_goals_received = game_data[list_pos_dyn][1]
-   game_detail.away_team.pp_goals_received = game_data[list_pos_dyn][2]
+   try:
+      list_pos_dyn = int(((np.where(game_data_array == 'PP GA'))[0])[0])
+      game_detail.home_team.pp_goals_received = game_data[list_pos_dyn][1]
+      game_detail.away_team.pp_goals_received = game_data[list_pos_dyn][2]
+   except:
+      pass
    list_pos_dyn = 0
-   list_pos_dyn = int(((np.where(game_data_array == 'PK GA'))[0])[0])
-   game_detail.home_team.pk_goals_received = game_data[list_pos_dyn][1]
-   game_detail.away_team.pk_goals_received = game_data[list_pos_dyn][2]
-   list_pos_dyn = int(((np.where(game_data_array == 'PIM Total'))[0])[0])
-   game_detail.home_team.pim               = game_data[list_pos_dyn][1]
-   game_detail.away_team.pim               = game_data[list_pos_dyn][2]
+   try:
+      list_pos_dyn = int(((np.where(game_data_array == 'PK GA'))[0])[0])
+      game_detail.home_team.pk_goals_received = game_data[list_pos_dyn][1]
+      game_detail.away_team.pk_goals_received = game_data[list_pos_dyn][2]
+   except:
+      pass
+   list_pos_dyn = 0
+   try:
+      list_pos_dyn = int(((np.where(game_data_array == 'PIM Total'))[0])[0])
+      game_detail.home_team.pim               = game_data[list_pos_dyn][1]
+      game_detail.away_team.pim               = game_data[list_pos_dyn][2]
+   except:
+      pass
 
    return game_detail
 #      
@@ -1700,4 +2466,4 @@ def test_get_game_det() -> None:
    print(game.home_team.sob)
    print(game.away_team.shots_missed)
    print(game.away_team.pp_goals)
-test_past_x_game_data()
+test_get_game_det()
