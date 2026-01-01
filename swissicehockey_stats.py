@@ -47,6 +47,32 @@ class Planned_game:
    """
 
    def __init__(self, league, home_team, away_team, start_date, start_time):
+      """
+      Initializes a player_filter object.
+      
+      Parameters
+      -----------
+         league: str 
+                 A string, which contains a league name in lower case and underscore
+                 instead of space format. The value then gets used to check it in the 
+                 dictionary LEAGUES and retreive the numeric representation used by SIHF
+         home_team: str
+                    A block of numbers representing the home team of a game. 
+                    Used to create the Team_game_detail object for the home team.
+         away_team: str
+                    A block of numbers representing the away team of a game. 
+                    Used to create the Team_game_detail object for the away team.
+         start_date: str 
+                     A string representing the date of when the game took place 
+                     in the format DD.MM.YYYY
+         start_time: str
+                     A string representing the time at which the game 
+                     starts in the format HH:MM (24h system used = no AM/PM).
+      Returns
+      -------
+         Nothing
+
+      """
       self.league     = league
       self.home_team  = home_team
       self.away_team  = away_team 
