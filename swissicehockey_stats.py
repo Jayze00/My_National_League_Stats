@@ -36,13 +36,13 @@ class Planned_game:
       translated into the numeric representation used by SIHF
       only used as a help in case of troubles, should not have any logic attached to it.
    home_team : str
-      A block of numbers representing the home team
+      A block of numbers representing the home team.
    away_team : str
-      A block of numbers representing the home team
+      A block of numbers representing the home team.
    start_date : str
-      A string representing the date of when the game takes place in the format DD.MM.YYYY
+      A string representing the date of when the game takes place in the format DD.MM.YYYY.
    start_time : str
-      A string representing the time at which the game starts in the format HH:MM (24h system used = no AM/PM)
+      A string representing the time at which the game starts in the format HH:MM (24h system used = no AM/PM).
 
    """
 
@@ -73,9 +73,10 @@ class Game_detail:
    date : str
       A string representing the date of when the game took place in the format DD.MM.YYYY
    home_team : Team_game_detail()
-      a variable which contains all stats of the game of the home team
+      A variable which contains all stats of the game of the home team
    away_team : Team_game_detail()
-      a variable which contains all stats of the game of the away team
+      A variable which contains all stats of the game of the away team
+
    """
 
    def __init__(self, game_id, league, home_team_id, away_team_id, date):
@@ -84,24 +85,31 @@ class Game_detail:
       
       Parameters
       -----------
-         game_id (str): A string representing the official SIHF GameID, typically containing 
-                        the season. This attribute is used for the communication with the API.
-         league (str): A string, which contains a league name in lower case and underscore
-                       instead of space format. The value then gets used to check it in the 
-                       dictionary LEAGUES and retreive the numeric representation used by SIHF
-         home_team_id (str): A block of numbers representing the home team of a game. 
-         away_team_id (str): A block of numbers representing the away team of a game. 
-         date (str): A string representing a flag if you want to filter for Swiss or abroad 
-                        licences (only applies for player filters) (default all)
-         position (str): A string representing the date of when the game took place 
-                         in the format DD.MM.YYYY
-         home_team (Team_game_detail): Variable gets initialized with the class Team_game_detail() 
-                                       where we pass the home_team_id.
-         away_team (Team_game_detail): Variable gets initialized with the class Team_game_detail()
-                                       where we pass the away_team_id.
-      Return
+         game_id: str
+                  A string representing the official SIHF GameID, typically containing 
+                  the season. This attribute is used for the communication with the API.
+         league: str 
+                 A string, which contains a league name in lower case and underscore
+                 instead of space format. The value then gets used to check it in the 
+                 dictionary LEAGUES and retreive the numeric representation used by SIHF
+         home_team_id: str
+                       A block of numbers representing the home team of a game. 
+                       Used to create the Team_game_detail object for the home team.
+         away_team_id: str
+                       A block of numbers representing the away team of a game. 
+                       Used to create the Team_game_detail object for the away team.
+         date: str 
+               A string representing the date of when the game took place 
+               in the format DD.MM.YYYY
+      Returns
       -------
          Nothing
+
+      See also
+      --------
+         swissicehockey_stats LEAGUES
+         swissicehockey_stats.Game_details.Team_game_detail
+
       """
       self.game_id    = game_id
       self.league     = league
@@ -110,7 +118,79 @@ class Game_detail:
       self.away_team  = self.Team_game_detail(away_team_id, False)
 
    class Team_game_detail:
+      """
+      This object contains the stats of one team for one finished / completed game 
+
+      Attributes
+      ----------
+      team_id: str
+         A block of numbers representing the home team.
+      hometeam : bool
+         A boolean which tells if the team represented by this object was the home team on the
+         game (=true) or not (=false)
+      goals : str
+         Amount of goals scored by the team stored as a string.
+      goals_received : str
+         Amount of goals against the team stored as a string.
+      sog : str
+         Amount of shot on goal performed by the team stored as a string
+      shots_missed : str
+         Amount of shots by the team, which missed the goal, stored as a string
+      sob : str
+         Amount of shots against the goal border by a team stored as a string
+      blocked_shots: str
+         Amount of shots blocked by a team stored as a string
+      fo_won: str
+         Amount of face offs won by a team stored as a string
+      fo_lost: str
+         Amount of face offs lost by a team stored as a string
+      fo_tot: str
+         Total amount of performed face offs by a team stored as a string
+      fo_oz_won_rate: str
+         Percentage rate rounded to two decimal positions of face offs won by a 
+         team in the offensive zone, stored as a string
+      fo_nz_won_rate: str
+         Percentage rate rounded to two decimal positions of face offs won by a 
+         team in the neutral zone, stored as a string
+      fo_dz_won_rate: str
+         Percentage rate rounded to two decimal positions of face offs won by a 
+         team in the defensive zone, stored as a string
+      pp_time: str
+         Time spent in power play in the format MM:SS stored as a string
+      pk_time: str
+         Time spent in box play (aka penalty killing) in the format MM:SS stored as a string
+      pp_ops: str
+         Amount of power play opportunities for a team stored as a string
+      pk_sit: str
+         Amount of box play situations for a team stored as a string
+      pp_goals: str
+         Amount of scored goals by a team in power play stored as a string
+      pk_goals: str
+         Amount of scored goals by a team in box play (aka short handers) stored as a string
+      pp_goals_received: str
+         Amount of goals against a team in power play stored as a string
+      pk_goals_received: str
+         Amount of goals against a team in box play stored as a string
+      pim: str
+         Amount of penalty minutes received by a team stored as a string
+
+      """
       def __init__(self, team_id: str, hometeam: bool):
+         """
+         Initializes a player_filter object.
+      
+         Parameters
+         -----------
+            team_id: str
+                     A block of numbers representing the home team.
+            hometeam: bool 
+                      A boolean which tells if the team represented by this object was the home team on the
+                      game (=true) or not (=false)
+         Return
+         -------
+            Nothing
+
+         """
          self.team_id           = team_id
          self.hometeam          = hometeam
          self.goals             = None  
@@ -170,23 +250,34 @@ class Player_filters:
       
       Parameters
       ----------
-         season (str): A 4 character represenation of the season (in SIHF format) 
-                       which is always the year, when the play offs take place 
-                       (e.g season 2025 took place from 17.09.2024 - 24.04.2025)
-         league (str): A string, which contains a league name in lower case and underscore
-                       instead of space format. The value then gets used to check it in the 
-                       dictionary LEAGUES and retreive the numeric representation used by SIHF
-         phase (str): A block of numbers representing the phase of a season. 
-                      Phases can be regular season, play-in, play-off, play-out, etc.
-         team (str): A numeric block representing the team you would like to get the data
-                     from (default all)
-         licence (str): A string representing a flag if you want to filter for Swiss or abroad 
-                        licences (only applies for player filters) (default all)
-         position (str): A string representing a flag which position you want to filter
-                         (only applies for player filters) (default all)
-      Return
-      ------
+         season: str
+                 A 4 character represenation of the season (in SIHF format) 
+                 which is always the year, when the play offs take place 
+                 (e.g season 2025 took place from 17.09.2024 - 24.04.2025)
+         league: str
+                 A string, which contains a league name in lower case and underscore
+                 instead of space format. The value then gets used to check it in the 
+                 dictionary LEAGUES and retreive the numeric representation used by SIHF
+         phase: str
+                A block of numbers representing the phase of a season. 
+                Phases can be regular season, play-in, play-off, play-out, etc.
+         team: str, default=all 
+               A numeric block representing the team you would like to get the data
+               from (default all)
+         licence: str, default=all
+                  A string representing a flag if you want to filter for Swiss or abroad 
+                  licences (only applies for player filters) (default all)
+         position: str, default=all
+                   A string representing a flag which position you want to filter
+                   (only applies for player filters) (default all)
+      Returns
+      -------
          Nothing
+      
+      See also
+      --------
+         swissicehockey_stats LEAGUES
+
       """
       self.season   = season
       # translate the provided string into the number needed by swiss ice hockey
@@ -201,6 +292,15 @@ class Player_filters:
 # the function used to identify what the current season is
 ###############################################################################
 def get_current_season() -> str:
+    """
+    Gets the current season in SIHF format based on the current date and the current month.
+    
+    :return: A 4 character represenation of the season (in SIHF format) which is always the 
+             year, when the play offs take place (e.g season 2025 took place from 
+             17.09.2024 - 24.04.2025).
+    :rtype: str
+
+    """
     # format of datetime.now() is YYYY-MM-DD HH:MM:SS.hs
     # since we are anyway only interested in the year and month
     # we get the current date, transform it the way we get it into a string 
@@ -298,23 +398,38 @@ ORDER_DESC = '&orderByDescending=true'
 # query ending
 RECORDS_TO_BE_RETURNED = '&take='
 STANDARD_ENDING = '&callback=externalStatisticsCallback&skip=-1&language=de'
-
+################################################################################
+# the functions 
+################################################################################
+################################################################################
+# base functions
+################################################################################
 def send_request(request_url: str) -> dict:
     """
-    Performs a HTTP/HTTPS GET request towards the SIHF data API with the provided URL and 
-    extracts the JavaScript container arround it with the help of regex
+    Performs a HTTP/HTTPS GET request towards the SIHF data API with the provided 
+    URL and extracts the JavaScript container arround it with the help of regex
 
     Parameters
     ----------
-        request_url (str): A HTTP or HTTPS URL with the endpoint at an API 
-                           to perform a GET Request
+        request_url: str
+                     A HTTP or HTTPS URL with the endpoint at an API 
+                     to perform a GET Request
 
-    Return
+    Returns
     ------ 
-        json_data (dict): A dictionary with n entries which contain the result without 
-                          JavaScript in JSON format (that's why it is in a dictionary),
-                          where you have a filters, data and header in case you have a 
-                          result
+        json_data: dict
+                   A dictionary with n entries which contain the result without 
+                   JavaScript in JSON format (that's why it is in a dictionary),
+                   where you have a filters, data and header in case you have a 
+                   result
+    Raises
+    ------
+    Exception
+      If the API endpoint could not be reached (URL is provided in the exception)
+    Exception
+      If the regex extraction or the json load of the response caused issues
+      (URL is provided in the exception)
+
     """
     try:
      # make a GET request to an API endpoint
@@ -331,8 +446,10 @@ def send_request(request_url: str) -> dict:
     except:
         raise Exception('Could not parse the response into JSON for the url: ' + request_url)
     
-def get_filter_options (season: str, league: str):
+def get_filter_options (league: str, season=' ') -> dict:
     """
+    Get the filter options for given league and season and return them in a dict
+
     If no season or a string with more than 4 characters gets provided it will
     be replaced with the current season. 
     A request to the swiss icehockey API gets sent and all possible filters
@@ -342,15 +459,27 @@ def get_filter_options (season: str, league: str):
 
     Parameters
     ---------- 
-        season (str): A 4 digit year in string format 
-        league (str): A string parameter which is part of the constant LEAGUES 
-                      and gets translated into the numeric representation used 
-                      by the siwss ice hockey fundation 
+        season: str, optional
+                A 4 digit year in string format 
+        league: str 
+                A string parameter which is part of the constant LEAGUES 
+                and gets translated into the numeric representation used 
+                by the siwss ice hockey fundation 
 
-    Return
-    ------ 
-        filter_options: A dictionary with n entries where the values are again a 
-        dictionary
+    Returns
+    ------- 
+        filter_options: dict
+                        A dictionary with n entries where the values 
+                        are again a dictionary
+    Raises
+    ------
+    Exception 
+        If no filters could be retreived for the given season
+
+    Warnings
+    --------
+        If the provided season got changed to the current season
+
     """
     # at first we are going to build a request URL which we then will send.
     # since we are only interessted in the filter options and not in the actuall 
@@ -380,7 +509,8 @@ def get_filter_options (season: str, league: str):
     # predefine an empty dict (yet another COBOL thing)
     filter_options = {}
     if (raw_data['filters'][0]['selected'] != season):
-        warnings.warn('Something went wrong / No data was present the provided season. Received data will be based of the current season')
+        warnings.warn('Something went wrong / No data was present the provided season. ' \
+                      'Received data will be based of the current season')
     try: 
         raw_data['filters'][2]['title'] != 'Team'
     except:
@@ -410,6 +540,38 @@ def get_filter_options (season: str, league: str):
 ###############################################################################
 
 def get_summary_player_stats (filters: Player_filters) -> list:
+   """
+   Get the summary stat of field players using the provided filters.
+
+   The summary stat is the exact same as if you click on player stats ->
+   Summary on the SIHF web page.
+
+   Parameters
+   ----------
+      filters: Player_filters
+               A set of filters which can be passed / used to get the 
+               desired data.
+   Returns
+   -------
+      summary_data: list of list of str or dict
+                    A list containing the statistic data where one entry 
+                    represents one player as a list which contains the actual 
+                    data or a dictionary in case of the team.
+                    The very last entry of the list currently still contains
+                    the headers for an easier implementation.
+   Raises
+   ------
+   Exception
+             If phase is not provided.
+   Exception
+             If season is not provided.
+   
+   See also
+   --------
+   swissicehockey_stats.Player_filters
+   https://m.sihf.ch/de/game-center/national-league/#/players/points/desc/page/0/
+
+   """
    # Input validation for the fields where no standard value is present
    if len(filters.phase) == 0: 
       raise Exception('Phase is mandatory for the summary stat')
@@ -436,6 +598,38 @@ def get_summary_player_stats (filters: Player_filters) -> list:
    return summary_data
 
 def get_player_goal_stats (filters: Player_filters) -> list: 
+   """
+   Get the goal stat of field players using the provided filters.
+
+   The goal stat is the exact same as if you click on player stats ->
+   Goals/Assists on the SIHF web page.
+
+   Parameters
+   ----------
+      filters: Player_filters
+               A set of filters which can be passed / used to get the 
+               desired data.
+   Returns
+   -------
+      goal_data: list of list of str or dict
+                 A list containing the statistic data where one entry 
+                 represents one player as a list which contains the actual 
+                 data or a dictionary in case of the team.
+                 The very last entry of the list currently still contains
+                 the headers for an easier implementation.
+   Raises
+   ------
+   Exception
+             If phase is not provided.
+   Exception
+             If season is not provided.
+   
+   See also
+   --------
+   swissicehockey_stats.Player_filters
+   https://m.sihf.ch/de/game-center/national-league/#/mashup/players/playerGoalAssist/goals/desc/page/1/
+
+   """
    # Input validation for the fields where no standard value is present
    if len(filters.phase) == 0: 
       raise Exception('Phase is mandatory for the goal/assist stat')
@@ -462,6 +656,38 @@ def get_player_goal_stats (filters: Player_filters) -> list:
    return goal_data
 
 def get_player_shot_stats (filters: Player_filters) -> list: 
+   """
+   Get the shot stat of field players using the provided filters.
+
+   The shot stat is the exact same as if you click on player stats ->
+   Goals/Assists on the SIHF web page.
+
+   Parameters
+   ----------
+      filters: Player_filters
+               A set of filters which can be passed / used to get the 
+               desired data.
+   Returns
+   -------
+      shot_data: list of list of str or dict
+                 A list containing the statistic data where one entry 
+                 represents one player as a list which contains the actual 
+                 data or a dictionary in case of the team.
+                 The very last entry of the list currently still contains
+                 the headers for an easier implementation.
+   Raises
+   ------
+   Exception
+             If phase is not provided.
+   Exception
+             If season is not provided.
+   
+   See also
+   --------
+   swissicehockey_stats.Player_filters
+   https://m.sihf.ch/de/game-center/national-league/#/mashup/players/playerShotDetail/sogSog/desc/page/1/
+
+   """
    # Input validation for the fields where no standard value is present
    if len(filters.phase) == 0: 
       raise Exception('Phase is mandatory for the shot on goal stat')
@@ -487,7 +713,98 @@ def get_player_shot_stats (filters: Player_filters) -> list:
    # at this state shot_data is a list with 0_n dictionaries as elements 
    return shot_data
 
+def get_player_penlaties_stats (filters: Player_filters) -> list: 
+   """
+   Get the penalties stat of field players using the provided filters.
+
+   The shot stat is the exact same as if you click on player stats ->
+   Penalties on the SIHF web page.
+
+   Parameters
+   ----------
+      filters: Player_filters
+               A set of filters which can be passed / used to get the 
+               desired data.
+   Returns
+   -------
+      pim_data: list of list of str or dict
+                A list containing the statistic data where one entry 
+                represents one player as a list which contains the actual 
+                data or a dictionary in case of the team.
+                The very last entry of the list currently still contains
+                the headers for an easier implementation.
+   Raises
+   ------
+   Exception
+             If phase is not provided.
+   Exception
+             If season is not provided.
+   
+   See also
+   --------
+   pim = penalty minutes
+   swissicehockey_stats.Player_filters
+   https://m.sihf.ch/de/game-center/national-league/#/mashup/players/playerFoul/pimTotal/desc/page/1/
+
+   """
+   # Input validation for the fields where no standard value is present
+   if len(filters.phase) == 0: 
+      raise Exception('Phase is mandatory for the shot on goal stat')
+   
+   if len(filters.season) == 0:
+      raise Exception('Season is mandatory for the shot on goal stat')
+   
+   # creation of the request URL with the help of the constants and the 
+   # filter class where defaults are set (and where this is not possible
+   # the input was already checked)
+   request_url =(BASE_URL + STAT_CACHE + PENALTY_STAT + SEARCHQUERY + '1//'
+               + filters.league + FILTERQUERY + filters.season + '/' + filters.phase + '/' 
+               + filters.team + '/' + filters.position + '/' + filters.licence
+               + FILTERBY + FILTER_NAMES + RECORDS_TO_BE_RETURNED + '1000' 
+               + STANDARD_ENDING)
+   # get the whole data (including page headers of the official website, 
+   # all possible filters and the actual data)
+   raw_data = send_request(request_url)
+
+   # only return the actual data since the rest is obsolet for us 
+   pim_data  = raw_data['data']
+   pim_data.append(raw_data['header'])
+   # at this state pim_data is a list with 0_n dictionaries as elements 
+   return pim_data
+
 def get_player_shootout_stats (filters: Player_filters) -> list: 
+   """
+   Get the shootout stat of field players using the provided filters.
+
+   The shootout stat is the exact same as if you click on player stats ->
+   Shootouts on the SIHF web page.
+
+   Parameters
+   ----------
+      filters: Player_filters
+               A set of filters which can be passed / used to get the 
+               desired data.
+   Returns
+   -------
+      shootout_data: list of list of str or dict
+                     A list containing the statistic data where one entry 
+                     represents one player as a list which contains the actual 
+                     data or a dictionary in case of the team.
+                     The very last entry of the list currently still contains
+                     the headers for an easier implementation.
+   Raises
+   ------
+   Exception
+             If phase is not provided.
+   Exception
+             If season is not provided.
+   
+   See also
+   --------
+   swissicehockey_stats.Player_filters
+   https://m.sihf.ch/de/game-center/national-league/#/mashup/players/playerShootout/penShots/desc/page/1/
+
+   """
    # Input validation for the fields where no standard value is present
    if len(filters.phase) == 0: 
       raise Exception('Phase is mandatory for the shootout stat')
@@ -514,6 +831,38 @@ def get_player_shootout_stats (filters: Player_filters) -> list:
    return shootout_data
 
 def get_player_faceoff_summary_stats (filters: Player_filters) -> list: 
+   """
+   Get the faceoffs summary stat of field players using the provided filters.
+
+   The faceoffs summary stat is the exact same as if you click on player stats ->
+   Faceoffs Summary on the SIHF web page.
+
+   Parameters
+   ----------
+      filters: Player_filters
+               A set of filters which can be passed / used to get the 
+               desired data.
+   Returns
+   -------
+      faceoff_data: list of list of str or dict
+                    A list containing the statistic data where one entry 
+                    represents one player as a list which contains the actual 
+                    data or a dictionary in case of the team.
+                    The very last entry of the list currently still contains
+                    the headers for an easier implementation.
+   Raises
+   ------
+   Exception
+             If phase is not provided.
+   Exception
+             If season is not provided.
+   
+   See also
+   --------
+   swissicehockey_stats.Player_filters
+   https://m.sihf.ch/de/game-center/national-league/#/mashup/players/playerFaceoff/faceoffs/desc/page/1/
+
+   """
    # Input validation for the fields where no standard value is present
    if len(filters.phase) == 0: 
       raise Exception('Phase is mandatory for the faceoff stat')
@@ -540,6 +889,38 @@ def get_player_faceoff_summary_stats (filters: Player_filters) -> list:
    return faceoff_data
 
 def get_player_faceoff_zone_stats (filters: Player_filters) -> list: 
+   """
+   Get the faceoffs per zone stat of field players using the provided filters.
+
+   The faceoffs per zone stat is the exact same as if you click on player stats ->
+   Faceoffs/Zone on the SIHF web page.
+
+   Parameters
+   ----------
+      filters: Player_filters
+               A set of filters which can be passed / used to get the 
+               desired data.
+   Returns
+   -------
+      faceoff_data: list of list of str or dict
+                    A list containing the statistic data where one entry 
+                    represents one player as a list which contains the actual 
+                    data or a dictionary in case of the team.
+                    The very last entry of the list currently still contains
+                    the headers for an easier implementation.
+   Raises
+   ------
+   Exception
+             If phase is not provided.
+   Exception
+             If season is not provided.
+   
+   See also
+   --------
+   swissicehockey_stats.Player_filters
+   https://m.sihf.ch/de/game-center/national-league/#/mashup/players/playerFaceoffZone/faceoffsOffensive/desc/page/1/
+
+   """
    # Input validation for the fields where no standard value is present
    if len(filters.phase) == 0: 
       raise Exception('Phase is mandatory for the faceoff zone stat')
@@ -566,6 +947,38 @@ def get_player_faceoff_zone_stats (filters: Player_filters) -> list:
    return faceoff_data
 
 def get_player_faceoff_zone_pg_stats (filters: Player_filters) -> list: 
+   """
+   Get the faceoffs per game stat of field players using the provided filters.
+
+   The faceoffs per game stat is the exact same as if you click on player stats ->
+   Faceoffs/Spiel on the SIHF web page.
+
+   Parameters
+   ----------
+      filters: Player_filters
+               A set of filters which can be passed / used to get the 
+               desired data.
+   Returns
+   -------
+      faceoff_data: list of list of str or dict
+                    A list containing the statistic data where one entry 
+                    represents one player as a list which contains the actual 
+                    data or a dictionary in case of the team.
+                    The very last entry of the list currently still contains
+                    the headers for an easier implementation.
+   Raises
+   ------
+   Exception
+             If phase is not provided.
+   Exception
+             If season is not provided.
+   
+   See also
+   --------
+   swissicehockey_stats.Player_filters
+   https://m.sihf.ch/de/game-center/national-league/#/mashup/players/playerFaceoffZoneGame/faceoffsOffensivePerGame/desc/page/1/
+
+   """
    # Input validation for the fields where no standard value is present
    if len(filters.phase) == 0: 
       raise Exception('Phase is mandatory for the faceoff zone per game stat')
@@ -592,6 +1005,39 @@ def get_player_faceoff_zone_pg_stats (filters: Player_filters) -> list:
    return faceoff_data
 
 def get_player_time_on_ice_stats (filters: Player_filters) -> list: 
+   """
+   Get the time on ice stat of field players using the provided filters.
+
+   The time on ice stat is the exact same as if you click on player stats ->
+   Time on ice on the SIHF web page.
+
+   Parameters
+   ----------
+      filters: Player_filters
+               A set of filters which can be passed / used to get the 
+               desired data.
+   Returns
+   -------
+      toi_data: list of list of str or dict
+                A list containing the statistic data where one entry 
+                represents one player as a list which contains the actual 
+                data or a dictionary in case of the team.
+                The very last entry of the list currently still contains
+                the headers for an easier implementation.
+   Raises
+   ------
+   Exception
+             If phase is not provided.
+   Exception
+             If season is not provided.
+   
+   See also
+   --------
+   toi = time on ice
+   swissicehockey_stats.Player_filters
+   https://m.sihf.ch/de/game-center/national-league/#/mashup/players/playerTimeOnIce/timeOnIcePerGame/desc/page/1/
+
+   """
    # Input validation for the fields where no standard value is present
    if len(filters.phase) == 0: 
       raise Exception('Phase is mandatory for the summary stat')
@@ -1035,7 +1481,11 @@ def get_past_n_games_of_team(filters: Player_filters, amount_of_games: int) -> l
                 + ORDERBY + ORDER_DATE + ORDER_DESC +  RECORDS_TO_BE_RETURNED 
                 + str(amount_of_games) + STANDARD_ENDING)
    raw_data = send_request(request_url)
-   past_games = raw_data['data']
+   past_games_data = raw_data['data']
+   past_games = []
+   for i in past_games_data:
+      game = get_game_detail(i[9]['gameId'])
+      past_games.append(game)
    return past_games
 
 def get_game_plan_of_season(season: str, league: str) -> list:
@@ -1111,7 +1561,8 @@ def get_game_detail(game_id: str) -> Game_detail:
    # for values (np.where) and this returns us two arrays where the first
    # array contains the position in the outer list (e.g. BkS is on index 15
    # for game 20261105000203) and the second array contains the position in the
-   # inner array (which is always 0)
+   # inner list (which is always 0). This had to be built because in case
+   # of overtimes, dynamically more entries are created for every stat.
    # I am quite sure that this could be done in a smoother way but this is
    # already kinda cool
    list_pos_dyn = 0
@@ -1199,7 +1650,7 @@ def test_stats_current_season () -> None:
     print(get_goalie_shootout_stats(test_filters))
 
 def test_get_filters() -> None:
-   print(get_filter_options('2025', 'swiss_league'))
+   print(get_filter_options('swiss_league', '2025'))
 
 def test_goalie_shootout() -> None:
    test_filters = Player_filters('2025','national_league', '4595', '101139')
@@ -1239,14 +1690,14 @@ def test_next_game_data() -> None:
 def test_past_x_game_data() -> None:
    test_filters = Player_filters('', 'national_league', '', '101139')
    amt = 10
-   print(get_past_n_games_of_team(test_filters, amt))
+   print((get_past_n_games_of_team(test_filters, amt))[9].away_team.sog)
    test_filters2 = Player_filters('', 'swiss_league', '', '102129')
    amt = 5
-   print(get_past_n_games_of_team(test_filters2, amt))
+   print((get_past_n_games_of_team(test_filters2, amt))[3].home_team.sog)
 
 def test_get_game_det() -> None:
-   game =get_game_detail('20261105000203')
+   game = get_game_detail('20261105000203')
    print(game.home_team.sob)
    print(game.away_team.shots_missed)
    print(game.away_team.pp_goals)
-test_get_game_det()
+test_past_x_game_data()
